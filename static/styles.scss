@@ -1,8 +1,8 @@
 body {
-    background-image: url('background-image.jpg');
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
+  background-image: url('background-image.jpg');
+  background-size: auto;
+  background-position: center;
+  height: 100vh;
   }
   
 .mt-5 {
@@ -10,8 +10,8 @@ body {
   height: 95vh;
 }
 
-.col-md-8 {
-  margin: 2em;
+.col-md-11 {
+  margin: 1em;
   margin-top: 10vh;
 }
 
@@ -89,5 +89,13 @@ button[type="submit"]:hover {
 
   .col-md-8 {
     margin-top: 1vh;
+  }
+}
+
+@media (max-width: 400px) {
+  input[type="text"],
+  input[type="password"] {
+    height: 50px;
+    font-size: 1rem;
   }
 }
