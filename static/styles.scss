@@ -10,6 +10,11 @@ body {
   height: 95vh;
 }
 
+.col-md-8 {
+  margin: 2em;
+  margin-top: 10vh;
+}
+
 .card {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
@@ -51,6 +56,7 @@ button[type="submit"] {
   width: 60%;
   margin-left: 20%;
   margin-right: 20%;
+  margin-top: 4vh;
   height: 50px;
   border-radius: 10px;
   background-color: #2c5db9;
@@ -58,7 +64,7 @@ button[type="submit"] {
   font-size: 1.2rem;
   font-weight: 600;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  margin-top: 4vh;
+
 }
   
 button[type="submit"]:hover {
@@ -66,11 +72,6 @@ button[type="submit"]:hover {
   cursor: pointer;
 }
   
-.col-md-6 {
-    margin: 2em;
-    margin-top: 10vh;
-}
-
 #question {
   text-align: center;
   opacity: 1;
@@ -80,3 +81,13 @@ button[type="submit"]:hover {
   font-weight: 500;
 }
 
+@media (max-height: 500px) {
+  .card-header {
+    color: rgb(35, 35, 209);
+    display: none;
+  }
+
+  .col-md-8 {
+    margin-top: 1vh;
+  }
+}

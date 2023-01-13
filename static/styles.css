@@ -8,6 +8,10 @@ body {
   margin-top: 0rem !important;
   height: 95vh; }
 
+.col-md-8 {
+  margin: 2em;
+  margin-top: 10vh; }
+
 .card {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
@@ -56,10 +60,6 @@ button[type="submit"]:hover {
   background-color: #1858be;
   cursor: pointer; }
 
-.col-md-6 {
-  margin: 2em;
-  margin-top: 10vh; }
-
 #question {
   text-align: center;
   opacity: 1;
@@ -67,5 +67,13 @@ button[type="submit"]:hover {
   margin-top: 2vh;
   font-size: 1.2rem;
   font-weight: 500; }
+
+@media (max-height: 500px) {
+  .card-header {
+    color: #2323d1;
+    display: none; }
+
+  .col-md-8 {
+    margin-top: 1vh; } }
 
 /*# sourceMappingURL=styles.css.map */
