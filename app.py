@@ -20,7 +20,8 @@ app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Configure CS50 Library to use SQLite database
+
+# Configure CS50 Library to use SQLite database  
 # db = SQL("sqlite:///finance.db")
 
 
@@ -44,7 +45,7 @@ def login():
     """Log user in"""
     # Forget any user_id
     session.clear()
-
+    print(3)
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         username = request.form.get("username")
@@ -66,3 +67,14 @@ def login():
     # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")

@@ -1,20 +1,23 @@
 body {
-  background-image: url("background-image.jpg");
-  background-size: cover;
-  background-position: center;
-  height: 100vh; }
-
+    background-image: url('background-image.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh;
+  }
+  
 .mt-5 {
-  margin-top: 0rem !important;
-  height: 95vh; }
+  margin-top: 0rem!important;
+  height: 95vh;
+}
 
 .card {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
   box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
   border-color: #242fa7;
-  padding: 1em; }
-
+  padding: 1em;
+}
+  
 .card-header {
   height: fit-content;
   font-size: 1.5rem;
@@ -23,21 +26,26 @@ body {
   background-color: rgba(39, 206, 150, 0.2);
   color: white;
   border-top-left-radius: 10px;
-  border-top-right-radius: 10px; }
-
+  border-top-right-radius: 10px;
+}
+  
 .form-control {
   border-radius: 10px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); }
-
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+  
 input[type="text"],
 input[type="password"] {
   height: 50px;
-  font-size: 1.2rem; }
-
+  font-size: 1.2rem;
+}
+  
 label {
   font-size: 1.2rem;
+  //font-weight: 500;
   color: black;
-  font-weight: bolder; }
+  font-weight: bolder;
+}
 
 button[type="submit"] {
   width: 60%;
@@ -50,15 +58,18 @@ button[type="submit"] {
   font-size: 1.2rem;
   font-weight: 600;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  margin-top: 4vh; }
-
+  margin-top: 4vh;
+}
+  
 button[type="submit"]:hover {
   background-color: #1858be;
-  cursor: pointer; }
-
+  cursor: pointer;
+}
+  
 .col-md-6 {
-  margin: 2em;
-  margin-top: 10vh; }
+    margin: 2em;
+    margin-top: 10vh;
+}
 
 #question {
   text-align: center;
@@ -66,6 +77,6 @@ button[type="submit"]:hover {
   font: black;
   margin-top: 2vh;
   font-size: 1.2rem;
-  font-weight: 500; }
+  font-weight: 500;
+}
 
-/*# sourceMappingURL=styles.css.map */
