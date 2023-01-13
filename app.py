@@ -1,7 +1,7 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, url_for
 from flask_session import Session
 # from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -61,7 +61,7 @@ def login():
         # Remember which user has logged in
         session["user_id"] = 5
         session["username"] = username
-        # Redirect user to home page
+        flash('You are logged in successfully')
         return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
