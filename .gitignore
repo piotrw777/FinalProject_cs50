@@ -2,3 +2,5 @@ flask_session/*
 __pycache__/*
 static/.sass-cache
 *.map
+.*
+rubbish

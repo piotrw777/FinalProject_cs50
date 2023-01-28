@@ -1,15 +1,53 @@
 import os
-
-from cs50 import SQL
 from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, url_for
 from flask_session import Session
 # from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import login_required
+from helpers import login_required, log_sql
+from flask_sqlalchemy import SQLAlchemy
+import random
+import string
+from itsdangerous import URLSafeTimedSerializer
+from dotenv import load_dotenv
+from sqlalchemy import event
+from sqlalchemy.sql import text
+
+
+
+def log_sql(statement, conn, *args, **kwargs):
+    print(str(text(str(statement)).compile(compile_kwargs={"literal_binds": True})))
+
+
 # from datetime import datetime
+# load ENVS from .env file
+
+load_dotenv()
 
 # Configure application
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ECHO'] = True
+app.config['SECRET_KEY'] = 'your_secret_key'
+db = SQLAlchemy(app)
+
+#class User(db.Model):
+#    id = db.Column(db.Integer, primary_key=True)
+#    email = db.Column(db.String(120), unique=True, nullable=False)
+#    username = db.Column(db.String(120), unique=True, nullable=False)
+#   password = db.Column(db.String(60), nullable=False)
+#    confirmed = db.Column(db.Boolean, default=False)
+#    confirmation_code = db.Column(db.String(20), nullable=True)
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(120), unique=False, nullable=False)
+
+db.create_all()
+
+event.listen(db.engine, "before_execute", log_sql)
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -18,10 +56,6 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
-
-
-# Configure CS50 Library to use SQLite database  
-# db = SQL("sqlite:///finance.db")
 
 
 @app.after_request
@@ -77,3 +111,27 @@ def logout():
 
     # Redirect user to login form
     return redirect("/")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Register user"""
+    if request.method == "POST":
+        # get variables from the form
+        name = request.form['username']
+        email = request.form['email']
+        password = request.form['password']
+
+        #debug
+        print(f"{name} hh {email}")
+
+        # add user to the database
+        new_user = User(name=name, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+        # get dictionary users = User.query.all()
+        return redirect("/login")
+    else:
+        return render_template("register.html")
+
+if __name__ == '__main__':
+    app.run(debug=True)
