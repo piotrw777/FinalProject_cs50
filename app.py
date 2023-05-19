@@ -3,7 +3,7 @@ from flask import Flask, flash, get_flashed_messages, redirect, render_template,
 from flask_session import Session
 # from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import login_required, log_sql
+from helpers import login_required
 from flask_sqlalchemy import SQLAlchemy
 import random
 import string
@@ -11,11 +11,6 @@ from itsdangerous import URLSafeTimedSerializer
 from dotenv import load_dotenv
 from sqlalchemy import event
 from sqlalchemy.sql import text
-
-
-
-def log_sql(statement, conn, *args, **kwargs):
-    print(str(text(str(statement)).compile(compile_kwargs={"literal_binds": True})))
 
 
 # from datetime import datetime
@@ -31,13 +26,6 @@ app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = 'your_secret_key'
 db = SQLAlchemy(app)
 
-#class User(db.Model):
-#    id = db.Column(db.Integer, primary_key=True)
-#    email = db.Column(db.String(120), unique=True, nullable=False)
-#    username = db.Column(db.String(120), unique=True, nullable=False)
-#   password = db.Column(db.String(60), nullable=False)
-#    confirmed = db.Column(db.Boolean, default=False)
-#    confirmation_code = db.Column(db.String(20), nullable=True)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -47,7 +35,7 @@ class User(db.Model):
 
 db.create_all()
 
-event.listen(db.engine, "before_execute", log_sql)
+# event.listen(db.engine, "before_execute", log_sql)
 
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
@@ -121,6 +109,14 @@ def register():
         email = request.form['email']
         password = request.form['password']
 
+        if (User.query.filter_by(name=name).first() != None):
+            flash('User already exists')
+            return render_template("register.html", msg = "error")
+        
+        if (User.query.filter_by(email=email).first() != None):
+            flash('User with given email already exists')
+            return render_template("register.html", msg = "error")
+
         #debug
         print(f"{name} hh {email}")
 
@@ -129,7 +125,8 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         # get dictionary users = User.query.all()
-        return redirect("/login")
+        flash('User successfully added')
+        return render_template("login.html", msg = "success")
     else:
         return render_template("register.html")
 
