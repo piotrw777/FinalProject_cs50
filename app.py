@@ -22,7 +22,7 @@ load_dotenv()
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ECHO'] = True
+#app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = 'your_secret_key'
 db = SQLAlchemy(app)
 
@@ -66,24 +66,25 @@ def login():
     """Log user in"""
     # Forget any user_id
     session.clear()
-    print(3)
+
     # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
         username = request.form.get("username")
-        print(username)
-        # Ensure username was submitted
-        if not username:
-            print(1)
+        user=User.query.filter_by(name=username).first()
 
-        # Ensure password was submitted
-        elif not request.form.get("password"):
-            return print(1)
-        print(request.form.get("password"))
+        if (user == None):
+            flash('User does not exist')
+            return render_template("login.html", msg = "error")
+
+        if not check_password_hash(user.password, request.form.get("password")):
+            flash('Wrong password')
+            return render_template("login.html", msg = "error")
+
         # Remember which user has logged in
-        session["user_id"] = 5
+        session["user_id"] = user.id
         session["username"] = username
         flash('You are logged in successfully')
-        return redirect("/")
+        return render_template("index.html", name=username)
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -100,6 +101,7 @@ def logout():
     # Redirect user to login form
     return redirect("/")
 
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register user"""
@@ -108,6 +110,7 @@ def register():
         name = request.form['username']
         email = request.form['email']
         password = request.form['password']
+        confirmation = request.form['confirmation']
 
         if (User.query.filter_by(name=name).first() != None):
             flash('User already exists')
@@ -116,12 +119,13 @@ def register():
         if (User.query.filter_by(email=email).first() != None):
             flash('User with given email already exists')
             return render_template("register.html", msg = "error")
-
-        #debug
-        print(f"{name} hh {email}")
+        
+        if (password != confirmation):
+            flash('Passwords don\'t match')
+            return render_template("register.html", msg = "error")
 
         # add user to the database
-        new_user = User(name=name, email=email, password=password)
+        new_user = User(name=name, email=email, password=generate_password_hash(password))
         db.session.add(new_user)
         db.session.commit()
         # get dictionary users = User.query.all()
