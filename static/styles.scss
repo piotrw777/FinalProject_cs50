@@ -154,3 +154,26 @@ button[type="submit"]:hover {
 .navbar-nav {
   margin-left: auto;
 }
+
+.col-lg-10 {
+  border: 2px;
+  border-color: black;
+}
+
+.col-md-12 {
+  border: 2px;
+  border-color: black;
+  border-style:solid;
+}
+
+.row {
+  border: 2px;
+  border-color: green;
+  border-style:solid;
+  margin-top: 2em;
+  }
+
+#exampleFormControlTextarea1 {
+  height: 30em;
+}
+

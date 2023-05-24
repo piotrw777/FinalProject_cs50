@@ -12,6 +12,11 @@ from dotenv import load_dotenv
 from sqlalchemy import event
 from sqlalchemy.sql import text
 
+from pylatex import Document, Section, Subsection, Command, Package
+from pylatex.document import Document
+from pylatex.utils import NoEscape
+
+from datetime import datetime
 
 # from datetime import datetime
 # load ENVS from .env file
@@ -133,6 +138,66 @@ def register():
         return render_template("login.html", msg = "success")
     else:
         return render_template("register.html")
+
+
+@app.route("/generate", methods=["GET", "POST"])
+def generate():
+    """generate tests"""
+    if request.method == "POST":
+
+        # get variables from the form
+        latex_code = request.form.get("latex_code")
+
+        # Get the filename from the form
+        filename = request.form.get("filename")
+
+        # Get the filename of the generated PDF file
+
+        # Create a PDF document
+        doc = Document()
+
+        # Add necessary packages
+        doc.packages.append(Package('amsmath'))
+        doc.packages.append(Package('amssymb'))
+        doc.packages.append(Package('amsfonts'))
+        doc.packages.append(Package('mathtools'))
+        doc.packages.append(Package('bm'))
+
+        # Add the LaTeX code to the document
+        doc.append(NoEscape(latex_code))
+
+
+        # Get the current date and time
+        now = datetime.now()
+
+        # Format the date and time as a string
+        date_str = now.strftime('%Y-%m-%d_%H-%M-%S')
+
+
+        # Generate PDF
+        try:
+            doc.generate_pdf(filename, clean_tex=False)
+        except Exception as e:
+            # There was an error generating the PDF, so redirect the user to the error page
+            return redirect('/error')
+
+        # Get the filename of the generated PDF file
+        #pdf_filename = f'{fname}.pdf'
+
+        # Get the size of the generated PDF file
+        #pdf_size = os.stat(pdf_filename).st_size
+
+        # Get the modification time of the generated PDF file
+        #pdf_date = datetime.fromtimestamp(os.path.getmtime(pdf_filename)).strftime('%Y-%m-%d %H:%M:%S')
+
+        # Render the success template with the link to the PDF file and the file size and date
+        #return render_template('success.html', pdf_filename=pdf_filename, pdf_size=pdf_size, pdf_date=pdf_date)
+
+
+        return render_template("tests.html", latex_code = latex_code)
+    else:
+        return render_template("tests.html")
+
 
 if __name__ == '__main__':
     app.run(debug=True)
