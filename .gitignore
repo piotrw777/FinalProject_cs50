@@ -4,4 +4,4 @@ static/.sass-cache
 *.map
 rubbish
 .*
-users.db
+*.db
