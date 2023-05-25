@@ -47,6 +47,9 @@
               <div class="collapse navbar-collapse text-right" id="navbarsExample05">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {% if session["user_id"] %}
+                <li class="nav-item">
+                  <a class="nav-link" href="#">User: {{ session["username"] }}</a>
+                </li>
                   <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="#">Home</a>
                   </li>
@@ -76,8 +79,6 @@
         <main class="container mt-5">
             {% block main %}{% endblock %}
         </main>
-        </div>
 
     </body>
-
 </html>

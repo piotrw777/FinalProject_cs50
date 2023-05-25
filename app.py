@@ -31,12 +31,21 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'your_secret_key'
 db = SQLAlchemy(app)
 
-
+USER_FILES_DIR="user_files"
+os.makedirs(USER_FILES_DIR, exist_ok=True)
+            
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=False, nullable=False)
+
+class Tests(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    userid = db.Column(db.String(20), nullable=False)
+    filename = db.Column(db.String(256), nullable=False)
+    code = db.Column(db.String(4096), nullable=False)
+    date = db.Column(db.DateTime)
 
 db.create_all()
 
@@ -133,6 +142,10 @@ def register():
         new_user = User(name=name, email=email, password=generate_password_hash(password))
         db.session.add(new_user)
         db.session.commit()
+
+        # create users directory
+        os.makedirs(f"{USER_FILES_DIR}/{name}")
+
         # get dictionary users = User.query.all()
         flash('User successfully added')
         return render_template("login.html", msg = "success")
@@ -173,14 +186,18 @@ def generate():
         # Format the date and time as a string
         date_str = now.strftime('%Y-%m-%d_%H-%M-%S')
 
-
         # Generate PDF
         try:
-            doc.generate_pdf(filename, clean_tex=False)
+            username_dir=session["username"]
+            doc.generate_pdf(f"{USER_FILES_DIR}/{username_dir}/{filename}", clean_tex=False)
         except Exception as e:
             # There was an error generating the PDF, so redirect the user to the error page
             return redirect('/error')
 
+        new_test = Tests(userid=session["user_id"], filename=filename, code = latex_code, date=datetime.now())
+        db.session.add(new_test)
+        db.session.commit()
+          
         # Get the filename of the generated PDF file
         #pdf_filename = f'{fname}.pdf'
 
