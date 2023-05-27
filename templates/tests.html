@@ -4,8 +4,23 @@
     Tests
 {% endblock %}
 
-{% block main %}
-    <p>
-        Hello {{latex_code}}
-    </p>
+{% block main %}          
+<table class="table">
+    <thead>
+        <tr>
+            <th class="text-start">Filename</th>
+            <th class="text-end">Date</th>
+            <th class="text-end">Download</th>
+        </tr>
+    </thead>
+    <tbody>
+{% for test in tests %}
+        <tr>
+            <td class="text-start">{{ test["filename"] }}</td>
+            <td class="text-end">{{ test["date"] }}</td>
+            <td><button type="button" class="btn btn-success download-button" id = "{{test["filename"]}}">Download</button></td>
+        </tr>
+{% endfor %}      
+    </tbody>
+</table>
 {% endblock %}

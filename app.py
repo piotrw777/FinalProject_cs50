@@ -1,5 +1,5 @@
 import os
-from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, url_for
+from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, url_for, send_from_directory
 from flask_session import Session
 # from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -164,8 +164,6 @@ def generate():
         # Get the filename from the form
         filename = request.form.get("filename")
 
-        # Get the filename of the generated PDF file
-
         # Create a PDF document
         doc = Document()
 
@@ -179,13 +177,6 @@ def generate():
         # Add the LaTeX code to the document
         doc.append(NoEscape(latex_code))
 
-
-        # Get the current date and time
-        now = datetime.now()
-
-        # Format the date and time as a string
-        date_str = now.strftime('%Y-%m-%d_%H-%M-%S')
-
         # Generate PDF
         try:
             username_dir=session["username"]
@@ -195,25 +186,44 @@ def generate():
             return redirect('/error')
 
         new_test = Tests(userid=session["user_id"], filename=filename, code = latex_code, date=datetime.now())
+
         db.session.add(new_test)
         db.session.commit()
           
-        # Get the filename of the generated PDF file
-        #pdf_filename = f'{fname}.pdf'
+    # Get the filename of the generated PDF file
+    #pdf_filename = f'{fname}.pdf'
 
-        # Get the size of the generated PDF file
-        #pdf_size = os.stat(pdf_filename).st_size
+    # Get the size of the generated PDF file
+    #pdf_size = os.stat(pdf_filename).st_size
 
-        # Get the modification time of the generated PDF file
-        #pdf_date = datetime.fromtimestamp(os.path.getmtime(pdf_filename)).strftime('%Y-%m-%d %H:%M:%S')
+    # Get the modification time of the generated PDF file
+    #pdf_date = datetime.fromtimestamp(os.path.getmtime(pdf_filename)).strftime('%Y-%m-%d %H:%M:%S')
 
-        # Render the success template with the link to the PDF file and the file size and date
-        #return render_template('success.html', pdf_filename=pdf_filename, pdf_size=pdf_size, pdf_date=pdf_date)
+    # Render the success template with the link to the PDF file and the file size and date
+    #return render_template('success.html', pdf_filename=pdf_filename, pdf_size=pdf_size, pdf_date=pdf_date)
+
+    tests  = Tests.query.filter_by(userid = session["user_id"]).all()
+    tests_pom = []
+
+    for test in tests:
+        tests_pom.append(test.__dict__)
+        tests_pom[-1]["date"] = tests_pom[-1]["date"].strftime('%Y-%m-%d %H:%M:%S')
 
 
-        return render_template("tests.html", latex_code = latex_code)
-    else:
-        return render_template("tests.html")
+    return render_template("tests.html", tests = tests)
+
+
+@app.route('/download_pdf')
+def download_pdf():
+    # Get the PDF filename from the request
+    filename = request.args.get('filename')
+
+    # Send the PDF file to the user
+    try:
+        return send_from_directory(os.getcwd(), filename, as_attachment=True)
+    except Exception as e:
+        # There was an error sending the PDF file, so redirect the user to the error page
+        return redirect('/error')
 
 
 if __name__ == '__main__':
