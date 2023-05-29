@@ -10,4 +10,21 @@ function addEventListeners() {
     closeButton.addEventListener('click', function() {
     document.querySelector('.alert').remove(); })};
 
+function test() {
+    let str = document.getElementById("LateXCode").value;
+    let regexp = /#(.*?)#/g;
+
+    let matches = str.matchAll(regexp);
+    matches = Array.from(matches);
+    let i = 0;
+    let pom = "";
+
+    while (i < matches.length) {
+        pom += matches[i][1] + ' ';
+        i += 1;
+    }
+
+    document.getElementById("test").innerHTML = pom;
+};
+
 document.addEventListener('DOMContentLoaded', addEventListeners);

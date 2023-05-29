@@ -164,6 +164,9 @@ def generate():
         # Get the filename from the form
         filename = request.form.get("filename")
 
+        # Ensure whether the file already exists
+        # TODO !!!
+
         # Create a PDF document
         doc = Document()
 
@@ -179,8 +182,7 @@ def generate():
 
         # Generate PDF
         try:
-            username_dir=session["username"]
-            doc.generate_pdf(f"{USER_FILES_DIR}/{username_dir}/{filename}", clean_tex=False)
+            doc.generate_pdf(f'{USER_FILES_DIR}/{session["username"]}/{filename}', clean_tex=False)
         except Exception as e:
             # There was an error generating the PDF, so redirect the user to the error page
             return redirect('/error')
@@ -220,7 +222,10 @@ def download_pdf():
 
     # Send the PDF file to the user
     try:
-        return send_from_directory(os.getcwd(), filename, as_attachment=True)
+        print(os.getcwd())
+        directory = f'{os.getcwd()}/{USER_FILES_DIR}/{session["username"]}'
+        return send_from_directory(directory, f"{filename}.pdf", as_attachment=True)
+        
     except Exception as e:
         # There was an error sending the PDF file, so redirect the user to the error page
         return redirect('/error')
