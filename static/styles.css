@@ -180,3 +180,11 @@ button[type="submit"]:hover {
 .container {
    max-width: 95%;
 }
+
+.form-row {
+  border-style: dotted;
+  border-radius: 1em;
+  border-color: #2c5db9;
+  margin-bottom: 1em;
+  background-color:#3c847e
+}
