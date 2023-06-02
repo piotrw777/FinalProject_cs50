@@ -1,3 +1,18 @@
+const VARIABLES = new Set();
+
+function removeID(_id){ 
+    var e=document.getElementById(_id);
+    if(e!==null) {
+        e.remove();
+    }
+}
+
+function setDifference(setA, setB) {
+    return new Set(
+      [...setA].filter(element => !setB.has(element))
+    );
+  }
+
 function addEventListeners() {
     document.querySelectorAll('.download-button').forEach(
         function(button) {
@@ -19,6 +34,8 @@ function createForm(variable) {
     const input_min = document.createElement('input');
     const div3 = document.createElement('div');
     const input_max = document.createElement('input');
+
+    form.setAttribute("id", "latex-var-" + variable)
 
     div1.setAttribute("class", "form-row align-items-center");
     div2.setAttribute("class", "col-auto");
@@ -48,21 +65,98 @@ function createForm(variable) {
 };
 
 function test() {
+    const str = document.getElementById("LateXCode").value;
+    const regexp = /#(.*?)#/g;
+    const matches = Array.from(str.matchAll(regexp));
+    const new_variables = new Set();
+
+    let i = 0;
+    while (i < matches.length) {
+        const variable = matches[i][1]
+        new_variables.add(variable)
+        i += 1;
+    }
+
+    const variables_to_remove = setDifference(VARIABLES, new_variables)
+    const variables_to_add = setDifference(new_variables, VARIABLES)
+
+    console.log("variables to remove:")
+    console.log(variables_to_remove)
+    variables_to_remove.forEach((currentElement) => { console.log(currentElement) })
+    console.log("variables to add")
+    console.log(variables_to_add)
+
+    variables_to_add.forEach((currentElement) => { 
+        VARIABLES.add(currentElement)
+        createForm(currentElement); })
+
+    variables_to_remove.forEach((currentElement) => { 
+        removeID("latex-var-" + currentElement)
+        VARIABLES.delete(currentElement)})
+
+    console.log("VARIABLES:")
+    console.log(VARIABLES)
+};
+
+function test_url() {
+    window.location.assign('/test_url/my_vars')
+};
+
+function sendUserData() {
+    // get variable names
     let str = document.getElementById("LateXCode").value;
     let regexp = /#(.*?)#/g;
 
     let matches = str.matchAll(regexp);
     matches = Array.from(matches);
     let i = 0;
-    let pom = "";
+    let vars = "";
 
     while (i < matches.length) {
-        pom += matches[i][1] + ' ';
+        vars += matches[i][1] + ' ';
         createForm(matches[i][1]);
         i += 1;
     }
 
-    document.getElementById("test").innerHTML = pom;
+    var x = { 'name': 'Piotr', 'type': 'admin', 'vars': vars};
+    console.log(x)
+    const request = new XMLHttpRequest()
+    request.open('POST', `/process-data/${JSON.stringify(x)}`)
+    request.onload = () => {
+        const flaskmessage = request.responseText
+        window.location.assign('/download_pdf?filename=' +"FDF")
+    }
+    request.send()
+
+}
+
+function myfunction() {
+
+    // const firstname = document.getElementById("fname").value;
+    // const lastname = document.getElementById("lname").value;
+    const firstname = "Piotr"
+    const lastname = "Wasilewski"
+
+    const dict_values = {firstname, lastname} //Pass the javascript variables to a dictionary.
+    const s = JSON.stringify(dict_values); // Stringify converts a JavaScript object or value to a JSON string
+    console.log(s); // Prints the variables to console window, which are in the JSON format
+    window.location.assign('/download_pdf?filename=' + button.id)
+    window.alert(s)
+    //$.ajax({
+    //    url:"/test_url",
+    //    type:"POST",
+    //    contentType: "application/json",
+    //    success: successFunction,
+    //    error: errorFunction,
+    //    data: JSON.stringify(s)});
+}
+
+function successFunction() {
+    alert('Hpo')
+};
+
+function errorFunction() {
+    alert('error')
 };
 
 document.addEventListener('DOMContentLoaded', addEventListeners);

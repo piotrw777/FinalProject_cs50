@@ -1,5 +1,6 @@
 import os
-from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, url_for, send_from_directory
+import json
+from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, url_for, send_from_directory, jsonify
 from flask_session import Session
 # from tempfile import mkdtemp
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -229,6 +230,21 @@ def download_pdf():
     except Exception as e:
         # There was an error sending the PDF file, so redirect the user to the error page
         return redirect('/error')
+
+
+@app.route('/process-data/<string:userInfo>', methods=['POST'])
+def process_data(userInfo):
+    userInfo = json.loads(userInfo)
+    print(userInfo)
+    print(f"Username: {userInfo['name']}")
+    return "bobo"
+
+
+@app.route('/test_url/<string:data>', methods=['POST', 'GET'])
+def test_url(data):
+    #data = json.loads(data)
+    #return render_template("jsonify.html", data['variables'])
+    return render_template("jsonify.html", data = data)
 
 
 if __name__ == '__main__':
