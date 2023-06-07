@@ -235,8 +235,16 @@ def download_pdf():
 @app.route('/process-data/<string:userInfo>', methods=['POST'])
 def process_data(userInfo):
     userInfo = json.loads(userInfo)
+    variables = userInfo['vars']
+    minimum_values = userInfo['mins']
+    maximum_values = userInfo['maxs']
+
+    print("burak777")
+    print(f"minimum: {minimum_values}")
+    print(f"maximum: {maximum_values}")
+    print(f"vars: {variables}")
+
     print(userInfo)
-    print(f"Username: {userInfo['name']}")
     return "bobo"
 
 

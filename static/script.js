@@ -13,19 +13,6 @@ function setDifference(setA, setB) {
     );
   }
 
-function addEventListeners() {
-    document.querySelectorAll('.download-button').forEach(
-        function(button) {
-            button.onclick = function() {
-                button.innerHTML = button.id;
-                window.location.assign('/download_pdf?filename=' + button.id); }});
-
-    //closing alerts
-    let closeButton = document.querySelector('.close');
-    closeButton.addEventListener('click', function() {
-    document.querySelector('.alert').remove(); })};
-
-
 function createForm(variable) {
     const form = document.createElement('form');
     const div1 = document.createElement('div');
@@ -64,7 +51,7 @@ function createForm(variable) {
     console.log(variable);
 };
 
-function test() {
+function update_variables_forms() {
     const str = document.getElementById("LateXCode").value;
     const regexp = /#(.*?)#/g;
     const matches = Array.from(str.matchAll(regexp));
@@ -98,65 +85,44 @@ function test() {
     console.log(VARIABLES)
 };
 
-function test_url() {
-    window.location.assign('/test_url/my_vars')
-};
-
 function sendUserData() {
-    // get variable names
-    let str = document.getElementById("LateXCode").value;
-    let regexp = /#(.*?)#/g;
-
-    let matches = str.matchAll(regexp);
-    matches = Array.from(matches);
-    let i = 0;
     let vars = "";
+    let mins = "";
+    let maxs = "";
 
-    while (i < matches.length) {
-        vars += matches[i][1] + ' ';
-        createForm(matches[i][1]);
-        i += 1;
-    }
+    // prepare string with variables info
+    VARIABLES.forEach((variable_name) => { 
+        mins += document.getElementById("min-" + variable_name).value + ' ';
+        maxs += document.getElementById("max-" + variable_name).value + ' ';
+        vars += variable_name + ' ';
+    })
 
-    var x = { 'name': 'Piotr', 'type': 'admin', 'vars': vars};
-    console.log(x)
+    var userData = {
+        'vars': vars, 
+        'mins' : mins,
+        'maxs' : maxs
+    };
+
     const request = new XMLHttpRequest()
-    request.open('POST', `/process-data/${JSON.stringify(x)}`)
+    request.open('POST', `/process-data/${JSON.stringify(userData)}`)
     request.onload = () => {
         const flaskmessage = request.responseText
         window.location.assign('/download_pdf?filename=' +"FDF")
     }
     request.send()
-
 }
 
-function myfunction() {
+function addEventListeners() {
+    var myInterval = setInterval(update_variables_forms, 1000);
+    document.querySelectorAll('.download-button').forEach(
+        function(button) {
+            button.onclick = function() {
+                button.innerHTML = button.id;
+                window.location.assign('/download_pdf?filename=' + button.id); }});
 
-    // const firstname = document.getElementById("fname").value;
-    // const lastname = document.getElementById("lname").value;
-    const firstname = "Piotr"
-    const lastname = "Wasilewski"
-
-    const dict_values = {firstname, lastname} //Pass the javascript variables to a dictionary.
-    const s = JSON.stringify(dict_values); // Stringify converts a JavaScript object or value to a JSON string
-    console.log(s); // Prints the variables to console window, which are in the JSON format
-    window.location.assign('/download_pdf?filename=' + button.id)
-    window.alert(s)
-    //$.ajax({
-    //    url:"/test_url",
-    //    type:"POST",
-    //    contentType: "application/json",
-    //    success: successFunction,
-    //    error: errorFunction,
-    //    data: JSON.stringify(s)});
-}
-
-function successFunction() {
-    alert('Hpo')
-};
-
-function errorFunction() {
-    alert('error')
-};
+    //closing alerts
+    let closeButton = document.querySelector('.close');
+    closeButton.addEventListener('click', function() {
+    document.querySelector('.alert').remove(); })};
 
 document.addEventListener('DOMContentLoaded', addEventListeners);
