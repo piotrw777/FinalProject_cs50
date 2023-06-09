@@ -55,6 +55,7 @@ function update_variables_forms() {
     const str = document.getElementById("LateXCode").value;
     const regexp = /#(.*?)#/g;
     const matches = Array.from(str.matchAll(regexp));
+    console.log(matches)
     const new_variables = new Set();
 
     let i = 0;
@@ -97,14 +98,16 @@ function sendUserData() {
         vars += variable_name + ' ';
     })
 
+   
     var userData = {
+        'code' : document.getElementById("LateXCode").value,
         'vars': vars, 
         'mins' : mins,
         'maxs' : maxs
     };
 
     const request = new XMLHttpRequest()
-    request.open('POST', `/process-data/${JSON.stringify(userData)}`)
+    request.open('POST', encodeURIComponent(`/process-data/${JSON.stringify(userData)}`))
     request.onload = () => {
         const flaskmessage = request.responseText
         window.location.assign('/download_pdf?filename=' +"FDF")

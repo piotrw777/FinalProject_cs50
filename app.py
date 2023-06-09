@@ -232,14 +232,16 @@ def download_pdf():
         return redirect('/error')
 
 
-@app.route('/process-data/<string:userInfo>', methods=['POST'])
+@app.route('/process-data/<path:userInfo>', methods=['POST'])
 def process_data(userInfo):
     userInfo = json.loads(userInfo)
     variables = userInfo['vars']
-    minimum_values = userInfo['mins']
-    maximum_values = userInfo['maxs']
+    minimum_values = userInfo['mins'].split()
+    maximum_values = userInfo['maxs'].split()
+    code = userInfo['code']
 
     print("burak777")
+    print(f"code:{code}")
     print(f"minimum: {minimum_values}")
     print(f"maximum: {maximum_values}")
     print(f"vars: {variables}")
@@ -247,12 +249,6 @@ def process_data(userInfo):
     print(userInfo)
     return "bobo"
 
-
-@app.route('/test_url/<string:data>', methods=['POST', 'GET'])
-def test_url(data):
-    #data = json.loads(data)
-    #return render_template("jsonify.html", data['variables'])
-    return render_template("jsonify.html", data = data)
 
 
 if __name__ == '__main__':
