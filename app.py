@@ -8,6 +8,7 @@ from helpers import login_required
 from flask_sqlalchemy import SQLAlchemy
 import random
 import string
+import re
 from itsdangerous import URLSafeTimedSerializer
 from dotenv import load_dotenv
 from sqlalchemy import event
@@ -235,18 +236,50 @@ def download_pdf():
 @app.route('/process-data/<path:userInfo>', methods=['POST'])
 def process_data(userInfo):
     userInfo = json.loads(userInfo)
-    variables = userInfo['vars']
+    variables = userInfo['vars'].split()
     minimum_values = userInfo['mins'].split()
     maximum_values = userInfo['maxs'].split()
     code = userInfo['code']
+    result_code = ""
 
-    print("burak777")
-    print(f"code:{code}")
-    print(f"minimum: {minimum_values}")
-    print(f"maximum: {maximum_values}")
-    print(f"vars: {variables}")
+    for group_nr in range(4):
+        random.seed()
+        code_1 = code
+        code_1 = code_1.replace("#G#", str(group_nr))
+        for var_index, var in enumerate(variables):
+            # pick a random value of a variable
+            print(f"hello{var}")
+            random_value = random.randrange(int(minimum_values[var_index]), int(maximum_values[var_index]) + 1)
+            code_1 = code_1.replace(f"#{var}#", str(random_value))    
+        result_code += code_1 + "\n\\newline\n" + "\n\\newpage\n"
 
-    print(userInfo)
+
+    print('%%%%%%%%%%%%%')    
+    print(f"result code: {result_code}")
+    print('%%%%%%%%%%%%%') 
+
+    # create latex document
+    doc = Document()
+
+    # Add necessary packages
+    doc.packages.append(Package('amsmath'))
+    doc.packages.append(Package('amssymb'))
+    doc.packages.append(Package('amsfonts'))
+    doc.packages.append(Package('mathtools'))
+    doc.packages.append(Package('bm'))
+
+    # Add the LaTeX code to the document
+    doc.append(NoEscape(result_code))
+
+
+    filename = "test22"
+    # Generate PDF
+    try:
+        doc.generate_pdf(f'{USER_FILES_DIR}/{session["username"]}/{filename}', clean_tex=False)
+    except Exception as e:
+        # There was an error generating the PDF, so redirect the user to the error page
+        return redirect('/error')
+
     return "bobo"
 
 
