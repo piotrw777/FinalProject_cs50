@@ -100,6 +100,7 @@ function sendUserData() {
 
    
     var userData = {
+        'filename' : document.getElementById("filename").value,
         'code' : document.getElementById("LateXCode").value,
         'vars': vars, 
         'mins' : mins,
@@ -110,7 +111,7 @@ function sendUserData() {
     request.open('POST', encodeURIComponent(`/process-data/${JSON.stringify(userData)}`))
     request.onload = () => {
         const flaskmessage = request.responseText
-        window.location.assign('/download_pdf?filename=' +"FDF")
+        window.location.assign('/download_pdf?filename=' +`${filename}`)
     }
     request.send()
 }

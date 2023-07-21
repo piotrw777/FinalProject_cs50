@@ -9,3 +9,9 @@ https://www.codespeedy.com/how-to-pass-javascript-variables-to-python-in-flask/
 
 CS50 Web development course
 https://www.youtube.com/watch?v=zFZrkCIc2Oc&t=6199s
+
+To create database run:
+python
+from app import app
+from app import db
+db.create_all()

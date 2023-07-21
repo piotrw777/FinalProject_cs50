@@ -1,11 +1,9 @@
-import os
-import json
+from helpers import login_required
+import os, json
 from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, url_for, send_from_directory, jsonify
 from flask_session import Session
-# from tempfile import mkdtemp
-from werkzeug.security import check_password_hash, generate_password_hash
-from helpers import login_required
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash, generate_password_hash
 import random
 import string
 import re
@@ -20,22 +18,29 @@ from pylatex.utils import NoEscape
 
 from datetime import datetime
 
-# from datetime import datetime
-# load ENVS from .env file
+USER_FILES_DIR="user_files"
+os.makedirs(USER_FILES_DIR, exist_ok=True)     
 
-load_dotenv()
+# load_dotenv()
 
-# Configure application
 app = Flask(__name__)
+# Ensure templates are auto-reloaded
+app.config["TEMPLATES_AUTO_RELOAD"] = True
+
+# Configure session to use filesystem (instead of signed cookies)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = 'your_secret_key'
-db = SQLAlchemy(app)
 
-USER_FILES_DIR="user_files"
-os.makedirs(USER_FILES_DIR, exist_ok=True)
-            
+Session(app)
+
+db = SQLAlchemy(app)
+app.app_context().push()
+
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=True, nullable=False)
@@ -48,18 +53,6 @@ class Tests(db.Model):
     filename = db.Column(db.String(256), nullable=False)
     code = db.Column(db.String(4096), nullable=False)
     date = db.Column(db.DateTime)
-
-db.create_all()
-
-# event.listen(db.engine, "before_execute", log_sql)
-
-# Ensure templates are auto-reloaded
-app.config["TEMPLATES_AUTO_RELOAD"] = True
-
-# Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
 
 
 @app.after_request
@@ -236,6 +229,7 @@ def download_pdf():
 @app.route('/process-data/<path:userInfo>', methods=['POST'])
 def process_data(userInfo):
     userInfo = json.loads(userInfo)
+    filename = userInfo['filename']
     variables = userInfo['vars'].split()
     minimum_values = userInfo['mins'].split()
     maximum_values = userInfo['maxs'].split()
@@ -271,8 +265,6 @@ def process_data(userInfo):
     # Add the LaTeX code to the document
     doc.append(NoEscape(result_code))
 
-
-    filename = "test22"
     # Generate PDF
     try:
         doc.generate_pdf(f'{USER_FILES_DIR}/{session["username"]}/{filename}', clean_tex=False)
@@ -283,6 +275,11 @@ def process_data(userInfo):
     return "bobo"
 
 
-
 if __name__ == '__main__':
     app.run(debug=True)
+
+#with app.app_context():
+#    print('dupa123')
+#    db.create_all()
+#    app.run(debug=True)
+        
