@@ -10,6 +10,10 @@ https://www.codespeedy.com/how-to-pass-javascript-variables-to-python-in-flask/
 CS50 Web development course
 https://www.youtube.com/watch?v=zFZrkCIc2Oc&t=6199s
 
+
+Flask context
+https://www.youtube.com/watch?v=JsZ1C9O_2XE
+
 To create database run:
 python
 from app import app

@@ -1,4 +1,4 @@
-from helpers import login_required
+from helpers import login_required, get_latex_errors
 import os, json
 from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, url_for, send_from_directory, jsonify
 from flask_session import Session
@@ -148,68 +148,6 @@ def register():
         return render_template("register.html")
 
 
-@app.route("/generate", methods=["GET", "POST"])
-def generate():
-    """generate tests"""
-    if request.method == "POST":
-
-        # get variables from the form
-        latex_code = request.form.get("latex_code")
-
-        # Get the filename from the form
-        filename = request.form.get("filename")
-
-        # Ensure whether the file already exists
-        # TODO !!!
-
-        # Create a PDF document
-        doc = Document()
-
-        # Add necessary packages
-        doc.packages.append(Package('amsmath'))
-        doc.packages.append(Package('amssymb'))
-        doc.packages.append(Package('amsfonts'))
-        doc.packages.append(Package('mathtools'))
-        doc.packages.append(Package('bm'))
-
-        # Add the LaTeX code to the document
-        doc.append(NoEscape(latex_code))
-
-        # Generate PDF
-        try:
-            doc.generate_pdf(f'{USER_FILES_DIR}/{session["username"]}/{filename}', clean_tex=False)
-        except Exception as e:
-            # There was an error generating the PDF, so redirect the user to the error page
-            return redirect('/error')
-
-        new_test = Tests(userid=session["user_id"], filename=filename, code = latex_code, date=datetime.now())
-
-        db.session.add(new_test)
-        db.session.commit()
-          
-    # Get the filename of the generated PDF file
-    #pdf_filename = f'{fname}.pdf'
-
-    # Get the size of the generated PDF file
-    #pdf_size = os.stat(pdf_filename).st_size
-
-    # Get the modification time of the generated PDF file
-    #pdf_date = datetime.fromtimestamp(os.path.getmtime(pdf_filename)).strftime('%Y-%m-%d %H:%M:%S')
-
-    # Render the success template with the link to the PDF file and the file size and date
-    #return render_template('success.html', pdf_filename=pdf_filename, pdf_size=pdf_size, pdf_date=pdf_date)
-
-    tests  = Tests.query.filter_by(userid = session["user_id"]).all()
-    tests_pom = []
-
-    for test in tests:
-        tests_pom.append(test.__dict__)
-        tests_pom[-1]["date"] = tests_pom[-1]["date"].strftime('%Y-%m-%d %H:%M:%S')
-
-
-    return render_template("tests.html", tests = tests)
-
-
 @app.route('/download_pdf')
 def download_pdf():
     # Get the PDF filename from the request
@@ -245,12 +183,8 @@ def process_data(userInfo):
             print(f"hello{var}")
             random_value = random.randrange(int(minimum_values[var_index]), int(maximum_values[var_index]) + 1)
             code_1 = code_1.replace(f"#{var}#", str(random_value))    
-        result_code += code_1 + "\n\\newline\n" + "\n\\newpage\n"
+        result_code += code_1 + "\n" + "\n\\newpage\n"
 
-
-    print('%%%%%%%%%%%%%')    
-    print(f"result code: {result_code}")
-    print('%%%%%%%%%%%%%') 
 
     # create latex document
     doc = Document()
@@ -265,21 +199,40 @@ def process_data(userInfo):
     # Add the LaTeX code to the document
     doc.append(NoEscape(result_code))
 
-    # Generate PDF
     try:
         doc.generate_pdf(f'{USER_FILES_DIR}/{session["username"]}/{filename}', clean_tex=False)
+        new_test = Tests(userid=session["user_id"], filename=filename, code = code, date=datetime.now())
+        db.session.add(new_test)
+        db.session.commit()
+        return {
+            'status' : "ok",
+            'response' : "ok"
+        }
     except Exception as e:
-        # There was an error generating the PDF, so redirect the user to the error page
-        return redirect('/error')
+        errors = get_latex_errors(f'{USER_FILES_DIR}/{session["username"]}/{filename}.log')
+        print(errors)
+        #os.remove(f'{USER_FILES_DIR}/{session["username"]}/{filename}.pdf')
+        return {
+            'status' : "error",
+            'response' : errors
+        }
 
-    return "bobo"
+
+@app.route("/tests", methods=["GET", "POST"])
+def tests():
+    """generate tests"""
+
+    tests  = Tests.query.filter_by(userid = session["user_id"]).all()
+    tests_pom = []
+
+    for test in tests:
+        tests_pom.append(test.__dict__)
+        tests_pom[-1]["date"] = tests_pom[-1]["date"].strftime('%Y-%m-%d %H:%M:%S')
+
+
+    return render_template("tests.html", tests = tests)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
 
-#with app.app_context():
-#    print('dupa123')
-#    db.create_all()
-#    app.run(debug=True)
-        

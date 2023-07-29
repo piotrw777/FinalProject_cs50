@@ -47,15 +47,12 @@ function createForm(variable) {
     div2.append(label);
     div3.append(input_min);
     div3.append(input_max);
-
-    console.log(variable);
 };
 
 function update_variables_forms() {
     const str = document.getElementById("LateXCode").value;
     const regexp = /#(.*?)#/g;
     const matches = Array.from(str.matchAll(regexp));
-    console.log(matches)
     const new_variables = new Set();
 
     let i = 0;
@@ -68,11 +65,7 @@ function update_variables_forms() {
     const variables_to_remove = setDifference(VARIABLES, new_variables)
     const variables_to_add = setDifference(new_variables, VARIABLES)
 
-    console.log("variables to remove:")
-    console.log(variables_to_remove)
     variables_to_remove.forEach((currentElement) => { console.log(currentElement) })
-    console.log("variables to add")
-    console.log(variables_to_add)
 
     variables_to_add.forEach((currentElement) => { 
         VARIABLES.add(currentElement)
@@ -81,15 +74,13 @@ function update_variables_forms() {
     variables_to_remove.forEach((currentElement) => { 
         removeID("latex-var-" + currentElement)
         VARIABLES.delete(currentElement)})
-
-    console.log("VARIABLES:")
-    console.log(VARIABLES)
 };
 
 function sendUserData() {
     let vars = "";
     let mins = "";
     let maxs = "";
+    let filename = document.getElementById("filename").value;
 
     // prepare string with variables info
     VARIABLES.forEach((variable_name) => { 
@@ -98,23 +89,36 @@ function sendUserData() {
         vars += variable_name + ' ';
     })
 
-   
     var userData = {
-        'filename' : document.getElementById("filename").value,
+        'filename' : filename,
         'code' : document.getElementById("LateXCode").value,
         'vars': vars, 
         'mins' : mins,
         'maxs' : maxs
     };
 
-    const request = new XMLHttpRequest()
-    request.open('POST', encodeURIComponent(`/process-data/${JSON.stringify(userData)}`))
-    request.onload = () => {
-        const flaskmessage = request.responseText
-        window.location.assign('/download_pdf?filename=' +`${filename}`)
-    }
-    request.send()
+    fetch(encodeURIComponent(`/process-data/${JSON.stringify(userData)}`), {
+        headers : {
+            'Content-Type' : 'application/json'
+        },
+        method : 'POST',
+        body : userData
+    })
+    .then(function (response) {
+        return response.text();
+    }).then(function (text) {
+        console.log(text)
+        const obj = JSON.parse(text)
+        if (obj["status"] === "ok") {
+            window.location.assign('/download_pdf?filename=' + filename)
+        } else {
+            alert(obj["response"])
+        }
+    });
+    
+
 }
+
 
 function addEventListeners() {
     var myInterval = setInterval(update_variables_forms, 1000);
