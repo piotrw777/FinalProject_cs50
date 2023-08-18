@@ -188,3 +188,8 @@ button[type="submit"]:hover {
   margin-bottom: 1em;
   background-color:#3c847e
 }
+
+#filename-error {
+  color: red;
+  border: red;
+}

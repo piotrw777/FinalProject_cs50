@@ -21,6 +21,8 @@ function createForm(variable) {
     const input_min = document.createElement('input');
     const div3 = document.createElement('div');
     const input_max = document.createElement('input');
+    const error_min = document.createElement('p');
+    const error_max = document.createElement('p');
 
     form.setAttribute("id", "latex-var-" + variable)
 
@@ -38,6 +40,9 @@ function createForm(variable) {
     input_max.setAttribute("class", "form-control mb-2");
     input_max.setAttribute("id", "max-" + variable);
 
+    error_min.setAttribute("id", "error-min-" + variable)
+    error_max.setAttribute("id", "error-max-" + variable)
+
     label.innerHTML = "variable: " + variable;
 
     document.querySelector('#variables-colum').append(form);
@@ -46,7 +51,9 @@ function createForm(variable) {
     div1.append(div3);
     div2.append(label);
     div3.append(input_min);
+    div3.append(error_min);
     div3.append(input_max);
+    div3.append(error_max);
 };
 
 function update_variables_forms() {
@@ -76,16 +83,66 @@ function update_variables_forms() {
         VARIABLES.delete(currentElement)})
 };
 
+function validate_filename() {
+    const error_box = document.getElementById('filename-error');
+    const filename = document.getElementById('filename').value;
+    const regex =  /^[A-Za-z0-9\(\)\-_\[\] ]+$/;
+
+    if (filename.length > 16) {
+        error_box.innerHTML = "Filename too long"
+        return "too long"
+    }
+
+    if (filename === "") {
+        error_box.innerHTML = "Filename is empty";
+        return "empty"
+    } 
+
+    if (!regex.test(filename)) {
+        error_box.innerHTML = "Invalid characters. Only these special characters ()[]-_ are allowed";
+        return "invalid"
+    }
+
+    error_box.innerHTML = "";
+    return "ok";
+}
+
+function validate_data() {
+    let ret_val = true;
+
+    if (validate_filename() != "ok") {
+        ret_val = false;
+    };
+
+    VARIABLES.forEach((currentElement) => {
+        validate_min_max(currentElement);  })
+    
+    return ret_val;
+};
+
+function validate_min_max(variable) {
+
+};
+
 function sendUserData() {
     let vars = "";
     let mins = "";
     let maxs = "";
-    let filename = document.getElementById("filename").value;
+    let filename = document.getElementById("filename").value.trim();
+    // TODO
+    // validate filename
 
+    if (validate_data() == false) {
+        return;
+    }
     // prepare string with variables info
+
+
     VARIABLES.forEach((variable_name) => { 
         mins += document.getElementById("min-" + variable_name).value + ' ';
         maxs += document.getElementById("max-" + variable_name).value + ' ';
+        // TODO
+        // validate mins and maxs
         vars += variable_name + ' ';
     })
 
@@ -115,13 +172,12 @@ function sendUserData() {
             alert(obj["response"])
         }
     });
-    
-
 }
 
 
 function addEventListeners() {
-    var myInterval = setInterval(update_variables_forms, 1000);
+    setInterval(update_variables_forms, 1000);
+    setInterval(validate_data, 5000);
     document.querySelectorAll('.download-button').forEach(
         function(button) {
             button.onclick = function() {

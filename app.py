@@ -174,6 +174,15 @@ def process_data(userInfo):
     code = userInfo['code']
     result_code = ""
 
+    # check if filename is already used in the database
+    filename_check=Tests.query.filter_by(filename=filename).first()
+
+    if (filename_check != None):
+        return {
+            'status' : "error",
+            'response' : "Filename is already used"
+        }
+
     for group_nr in range(4):
         random.seed()
         code_1 = code
