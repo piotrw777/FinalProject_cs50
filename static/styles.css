@@ -192,4 +192,9 @@ button[type="submit"]:hover {
 #filename-error {
   color: red;
   border: red;
+
+}
+
+.error {
+  color: red;
 }

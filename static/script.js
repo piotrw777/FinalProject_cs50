@@ -41,7 +41,9 @@ function createForm(variable) {
     input_max.setAttribute("id", "max-" + variable);
 
     error_min.setAttribute("id", "error-min-" + variable)
+    error_min.setAttribute("class", "error")
     error_max.setAttribute("id", "error-max-" + variable)
+    error_max.setAttribute("class", "error")
 
     label.innerHTML = "variable: " + variable;
 
@@ -115,13 +117,46 @@ function validate_data() {
     };
 
     VARIABLES.forEach((currentElement) => {
-        validate_min_max(currentElement);  })
+        if (validate_min_max(currentElement) != "ok") {
+            ret_val = false;
+        }})
     
     return ret_val;
 };
 
 function validate_min_max(variable) {
+    var ret_val = "ok"
+    const min_val = document.getElementById("min-" + variable).value.trim()
+    const max_val = document.getElementById("max-" + variable).value.trim()
+    error_box_min = document.getElementById("error-min-" + variable)
+    error_box_max = document.getElementById("error-max-" + variable)
 
+    const regex = /^[+-]?[0-9]+$/;
+
+    if (!regex.test(min_val)) {
+        error_box_min.innerHTML = "Provide a valid number";
+        ret_val = "invalid";
+    } else {
+        error_box_min.innerHTML = "";
+    }
+
+    if (!regex.test(max_val)) {
+        error_box_max.innerHTML = "Provide a valid number";
+        ret_val = "invalid";
+    } else {
+        error_box_max.innerHTML = "";
+    }
+
+    if (ret_val === "ok" && (Number(max_val) < Number(min_val))) {
+        error_box_max.innerHTML = "Maximum value less than minmum value";
+        ret_val = "invalid"
+    }
+
+    if (ret_val === "ok") {
+        error_box_max.innerHTML = "";
+    }
+
+    return ret_val;
 };
 
 function sendUserData() {
@@ -129,20 +164,15 @@ function sendUserData() {
     let mins = "";
     let maxs = "";
     let filename = document.getElementById("filename").value.trim();
-    // TODO
-    // validate filename
 
     if (validate_data() == false) {
         return;
     }
+
     // prepare string with variables info
-
-
     VARIABLES.forEach((variable_name) => { 
         mins += document.getElementById("min-" + variable_name).value + ' ';
         maxs += document.getElementById("max-" + variable_name).value + ' ';
-        // TODO
-        // validate mins and maxs
         vars += variable_name + ' ';
     })
 
@@ -177,7 +207,7 @@ function sendUserData() {
 
 function addEventListeners() {
     setInterval(update_variables_forms, 1000);
-    setInterval(validate_data, 5000);
+    setInterval(validate_data, 2000);
     document.querySelectorAll('.download-button').forEach(
         function(button) {
             button.onclick = function() {
