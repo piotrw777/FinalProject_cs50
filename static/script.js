@@ -67,7 +67,9 @@ function update_variables_forms() {
     let i = 0;
     while (i < matches.length) {
         const variable = matches[i][1]
-        new_variables.add(variable)
+        if (variable != "G") {
+            new_variables.add(variable)
+        }
         i += 1;
     }
 
@@ -176,12 +178,15 @@ function sendUserData() {
         vars += variable_name + ' ';
     })
 
+    groups = Number(document.getElementById('nr_of_groups').selectedIndex) + 1;
+
     var userData = {
         'filename' : filename,
         'code' : document.getElementById("LateXCode").value,
         'vars': vars, 
         'mins' : mins,
-        'maxs' : maxs
+        'maxs' : maxs,
+        'groups' : groups
     };
 
     fetch(encodeURIComponent(`/process-data/${JSON.stringify(userData)}`), {
@@ -206,8 +211,8 @@ function sendUserData() {
 
 
 function addEventListeners() {
-    setInterval(update_variables_forms, 1000);
-    setInterval(validate_data, 2000);
+    setInterval(update_variables_forms, 100);
+    setInterval(validate_data, 5000);
     document.querySelectorAll('.download-button').forEach(
         function(button) {
             button.onclick = function() {

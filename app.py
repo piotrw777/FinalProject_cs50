@@ -168,10 +168,12 @@ def download_pdf():
 def process_data(userInfo):
     userInfo = json.loads(userInfo)
     filename = userInfo['filename']
+    groups = int(userInfo['groups'])
     variables = userInfo['vars'].split()
     minimum_values = userInfo['mins'].split()
     maximum_values = userInfo['maxs'].split()
     code = userInfo['code']
+    groups_symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     result_code = ""
 
     # check if filename is already used in the database
@@ -183,10 +185,10 @@ def process_data(userInfo):
             'response' : "Filename is already used"
         }
 
-    for group_nr in range(4):
+    for group_nr in range(groups):
         random.seed()
         code_1 = code
-        code_1 = code_1.replace("#G#", str(group_nr))
+        code_1 = code_1.replace("#G#", groups_symbols[group_nr])
         for var_index, var in enumerate(variables):
             # pick a random value of a variable
             print(f"hello{var}")
@@ -195,15 +197,17 @@ def process_data(userInfo):
         result_code += code_1 + "\n" + "\n\\newpage\n"
 
 
-    # create latex document
-    doc = Document()
-
+    # set margins
+    geometry_options = {"tmargin": "3cm", "lmargin": "3cm", "bmargin": "3cm", "rmargin": "3cm"}
+    doc = Document(geometry_options=geometry_options, font_size='large')
     # Add necessary packages
     doc.packages.append(Package('amsmath'))
     doc.packages.append(Package('amssymb'))
     doc.packages.append(Package('amsfonts'))
     doc.packages.append(Package('mathtools'))
     doc.packages.append(Package('bm'))
+    doc.packages.append(Package('setspace'))
+    doc.append(Command('setstretch', arguments='1.25'))
 
     # Add the LaTeX code to the document
     doc.append(NoEscape(result_code))
