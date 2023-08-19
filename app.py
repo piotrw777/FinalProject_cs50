@@ -11,6 +11,7 @@ from itsdangerous import URLSafeTimedSerializer
 from dotenv import load_dotenv
 from sqlalchemy import event
 from sqlalchemy.sql import text
+from py_expression_eval import Parser
 
 from pylatex import Document, Section, Subsection, Command, Package
 from pylatex.document import Document
@@ -20,6 +21,7 @@ from datetime import datetime
 
 USER_FILES_DIR="user_files"
 os.makedirs(USER_FILES_DIR, exist_ok=True)     
+parser = Parser()
 
 # load_dotenv()
 
@@ -196,6 +198,9 @@ def process_data(userInfo):
             code_1 = code_1.replace(f"#{var}#", str(random_value))    
         result_code += code_1 + "\n" + "\n\\newpage\n"
 
+    x = re.findall(r"@([^@]+)@", result_code)
+    for match in x:
+        result_code = result_code.replace(f"@{match}@", str(parser.parse(match).evaluate({})))
 
     # set margins
     geometry_options = {"tmargin": "3cm", "lmargin": "3cm", "bmargin": "3cm", "rmargin": "3cm"}
