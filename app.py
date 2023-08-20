@@ -166,8 +166,88 @@ def download_pdf():
         return redirect('/error')
 
 
+@app.route('/generate_pdf')
+@login_required
+def generate_pdf():
+    # Get the PDF filename from the request
+    filename = request.args.get('filename')
+
+    directory = f'{os.getcwd()}/{USER_FILES_DIR}/{session["username"]}'
+    return send_from_directory(directory, f"{filename}.pdf")
+
+
 @app.route('/process-data/<path:userInfo>', methods=['POST'])
 def process_data(userInfo):
+    userInfo = json.loads(userInfo)
+    filename = userInfo['filename']
+    groups = int(userInfo['groups'])
+    variables = userInfo['vars'].split()
+    minimum_values = userInfo['mins'].split()
+    maximum_values = userInfo['maxs'].split()
+    code = userInfo['code']
+    groups_symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
+    result_code = ""
+
+    # check if filename is already used in the database
+    filename_check=Tests.query.filter_by(filename=filename).first()
+
+    if (filename_check != None):
+        return {
+            'status' : "error",
+            'response' : "Filename is already used"
+        }
+
+    for group_nr in range(groups):
+        random.seed()
+        code_1 = code
+        code_1 = code_1.replace("#G#", groups_symbols[group_nr])
+        for var_index, var in enumerate(variables):
+            # pick a random value of a variable
+            print(f"hello{var}")
+            random_value = random.randrange(int(minimum_values[var_index]), int(maximum_values[var_index]) + 1)
+            code_1 = code_1.replace(f"#{var}#", str(random_value))    
+        result_code += code_1 + "\n" + "\n\\newpage\n"
+
+    x = re.findall(r"@([^@]+)@", result_code)
+    for match in x:
+        result_code = result_code.replace(f"@{match}@", str(parser.parse(match).evaluate({})))
+
+    # set margins
+    geometry_options = {"tmargin": "3cm", "lmargin": "3cm", "bmargin": "3cm", "rmargin": "3cm"}
+    doc = Document(geometry_options=geometry_options, font_size='large')
+    # Add necessary packages
+    doc.packages.append(Package('amsmath'))
+    doc.packages.append(Package('amssymb'))
+    doc.packages.append(Package('amsfonts'))
+    doc.packages.append(Package('mathtools'))
+    doc.packages.append(Package('bm'))
+    doc.packages.append(Package('setspace'))
+    doc.append(Command('setstretch', arguments='1.25'))
+
+    # Add the LaTeX code to the document
+    doc.append(NoEscape(result_code))
+
+    try:
+        doc.generate_pdf(f'{USER_FILES_DIR}/{session["username"]}/{filename}', clean_tex=False)
+        new_test = Tests(userid=session["user_id"], filename=filename, code = code, date=datetime.now())
+        db.session.add(new_test)
+        db.session.commit()
+        return {
+            'status' : "ok",
+            'response' : "ok"
+        }
+    except Exception as e:
+        errors = get_latex_errors(f'{USER_FILES_DIR}/{session["username"]}/{filename}.log')
+        print(errors)
+        #os.remove(f'{USER_FILES_DIR}/{session["username"]}/{filename}.pdf')
+        return {
+            'status' : "error",
+            'response' : errors
+        }
+
+
+@app.route('/generate-preview/<path:userInfo>', methods=['POST'])
+def generate_preview(userInfo):
     userInfo = json.loads(userInfo)
     filename = userInfo['filename']
     groups = int(userInfo['groups'])
@@ -246,7 +326,6 @@ def tests():
     for test in tests:
         tests_pom.append(test.__dict__)
         tests_pom[-1]["date"] = tests_pom[-1]["date"].strftime('%Y-%m-%d %H:%M:%S')
-
 
     return render_template("tests.html", tests = tests)
 

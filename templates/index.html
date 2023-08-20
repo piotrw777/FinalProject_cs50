@@ -6,9 +6,7 @@
 
 {% block main %}
 <div class="row">
-  <div class="col-lg-10 col-md-12">
-    <!--<form>-->
-    <!--<form action="/generate" method="post">-->
+  <div class="col-xl-5 col-md-9 col-sm-12" id="code_column">
       <div class="form-group">
         <label for="filename">Filename</label>
         <input type="text" class="form-control" id="filename" placeholder="Provide a filename without an extension" required>
@@ -38,12 +36,13 @@ Grupa: #G#
 $$\dfrac{1}{2}+\dfrac{1}{3}$$
 
 \textbf{Zad 2.} Wyprowadź wzór na $(a+b)^2$
-</textarea>
+        </textarea>
       </div>
       <button class="btn btn-primary mb-2" id="generate-pdf" onclick="sendUserData()">Generate tests</button>
-    <!--</form>-->
+      <button class="btn btn-primary mb-2" id="generate-pdf" onclick="generate_preview()">Preview</button>
   </div>
-  <div class="col-lg-2 col-md-12" id="variables-colum">
+
+  <div class="col-xl-2 col-md col-sm-12" id="variables_colum">
     <!--
     <form>
       <div class="form-row"> 
@@ -57,6 +56,9 @@ $$\dfrac{1}{2}+\dfrac{1}{3}$$
         </div>
       </div>
     </form> -->
+  </div>
+  <div class="col-xl col-md-12 col-sm-12" id="preview-column">
+    <iframe id="preview" frameborder="0"></iframe>
   </div>
   </div>
 </div>

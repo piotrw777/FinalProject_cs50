@@ -10,11 +10,6 @@ body {
   height: 95vh;
 }
 
-.col-md-10 {
-  margin: 1em;
-  margin-top: 10vh;
-}
-
 .card {
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 10px;
@@ -47,7 +42,7 @@ input[type="password"] {
   
 label {
   font-size: 1.2rem;
-  //font-weight: 500;
+  font-weight: 500;
   color: black;
   font-weight: bolder;
 }
@@ -85,10 +80,6 @@ button[type="submit"]:hover {
   .card-header {
     color: rgb(35, 35, 209);
     display: none;
-  }
-
-  .col-md-8 {
-    margin-top: 1vh;
   }
 }
 
@@ -155,22 +146,9 @@ button[type="submit"]:hover {
   margin-left: auto;
 }
 
-.col-lg-10 {
-  border: 2px;
-  border-color: black;
-}
-
-.col-md-12 {
-  border: 2px;
-  border-color: black;
-  border-style:solid;
-}
-
 .row {
-  border: 2px;
-  border-color: green;
-  border-style:solid;
-  margin-top: 2em;
+  margin-top: 1em;
+  width: 100%;
   }
 
 #LateXCode {
@@ -178,7 +156,7 @@ button[type="submit"]:hover {
 }
 
 .container {
-   max-width: 95%;
+   max-width: 99%;
 }
 
 .form-row {
@@ -186,15 +164,44 @@ button[type="submit"]:hover {
   border-radius: 1em;
   border-color: #2c5db9;
   margin-bottom: 1em;
-  background-color:#3c847e
 }
 
 #filename-error {
   color: red;
   border: red;
-
 }
 
 .error {
   color: red;
+}
+
+#preview {
+  height:80%;
+  width: 98%;
+}
+
+#preview-column {
+  border: 3px;
+  border-style: solid;
+  border-color: yellow;
+  margin: 3px;
+}
+
+#variables_colum {
+  border: 3px;
+  border-style: solid;
+  border-color: green;
+  margin: 3px;
+}
+
+#code_column {
+  border: 3px;
+  border-style: solid;
+  border-color: red;
+  margin: 3px;
+}
+
+#variable_div {
+  left: 20%;
+  right: 20%;
 }
