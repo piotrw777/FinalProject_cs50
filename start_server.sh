@@ -1,6 +1,6 @@
 #!/bin/bash
 
-database_file_path=".instance/users.db" 
+database_file_path="./instance/users.db" 
 
 source myenv/bin/activate
 
