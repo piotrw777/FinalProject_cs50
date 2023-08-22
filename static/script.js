@@ -94,32 +94,28 @@ function validate_filename() {
 
     if (filename.length > 16) {
         error_box.innerHTML = "Filename too long"
-        return "too long"
+        return false;
     }
 
     if (filename === "") {
         error_box.innerHTML = "Filename is empty";
-        return "empty"
+        return false;
     } 
 
     if (!regex.test(filename)) {
         error_box.innerHTML = "Invalid characters. Only these special characters ()[]-_ are allowed";
-        return "invalid"
+        return false;
     }
 
     error_box.innerHTML = "";
-    return "ok";
+    return true;
 }
 
 function validate_data() {
     let ret_val = true;
 
-    if (validate_filename() != "ok") {
-        ret_val = false;
-    };
-
     VARIABLES.forEach((currentElement) => {
-        if (validate_min_max(currentElement) != "ok") {
+        if (validate_min_max(currentElement) == false) {
             ret_val = false;
         }})
     
@@ -127,7 +123,7 @@ function validate_data() {
 };
 
 function validate_min_max(variable) {
-    var ret_val = "ok"
+    var ret_val = true
     const min_val = document.getElementById("min-" + variable).value.trim()
     const max_val = document.getElementById("max-" + variable).value.trim()
     error_box_min = document.getElementById("error-min-" + variable)
@@ -137,24 +133,24 @@ function validate_min_max(variable) {
 
     if (!regex.test(min_val)) {
         error_box_min.innerHTML = "Provide a valid number";
-        ret_val = "invalid";
+        ret_val = false;
     } else {
         error_box_min.innerHTML = "";
     }
 
     if (!regex.test(max_val)) {
         error_box_max.innerHTML = "Provide a valid number";
-        ret_val = "invalid";
+        ret_val = false;
     } else {
         error_box_max.innerHTML = "";
     }
 
-    if (ret_val === "ok" && (Number(max_val) < Number(min_val))) {
+    if (ret_val == true && (Number(max_val) < Number(min_val))) {
         error_box_max.innerHTML = "Maximum value less than minmum value";
-        ret_val = "invalid"
+        ret_val = false;
     }
 
-    if (ret_val === "ok") {
+    if (ret_val == true) {
         error_box_max.innerHTML = "";
     }
 
@@ -167,7 +163,7 @@ function sendUserData() {
     let maxs = "";
     let filename = document.getElementById("filename").value.trim();
 
-    if (validate_data() == false) {
+    if ((validate_filename() == false) || (validate_data() == false)) {
         return;
     }
 
@@ -213,7 +209,6 @@ function generate_preview() {
     let vars = "";
     let mins = "";
     let maxs = "";
-    let filename = document.getElementById("filename").value.trim();
 
     if (validate_data() == false) {
         return;
@@ -229,7 +224,6 @@ function generate_preview() {
     groups = Number(document.getElementById('nr_of_groups').selectedIndex) + 1;
 
     var userData = {
-        'filename' : filename,
         'code' : document.getElementById("LateXCode").value,
         'vars': vars, 
         'mins' : mins,
@@ -237,7 +231,7 @@ function generate_preview() {
         'groups' : groups
     };
 
-    fetch(encodeURIComponent(`/process-data/${JSON.stringify(userData)}`), {
+    fetch(encodeURIComponent(`/generate-preview/${JSON.stringify(userData)}`), {
         headers : {
             'Content-Type' : 'application/json'
         },
@@ -251,7 +245,7 @@ function generate_preview() {
         const obj = JSON.parse(text)
         if (obj["status"] === "ok") {
             preview = document.getElementById('preview')
-            preview.setAttribute("src", `/generate_pdf?filename=${filename}`)
+            preview.setAttribute("src", `/generate_pdf?filename=preview/preview`)
         } else {
             alert(obj["response"])
         }

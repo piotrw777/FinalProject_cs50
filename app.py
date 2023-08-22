@@ -20,7 +20,11 @@ from pylatex.utils import NoEscape
 from datetime import datetime
 
 USER_FILES_DIR="user_files"
-os.makedirs(USER_FILES_DIR, exist_ok=True)     
+PREVIEW_DIRNAME="preview"
+PREVIEW_FILENAME="preview_file"
+
+os.makedirs(USER_FILES_DIR, exist_ok=True) 
+
 parser = Parser()
 
 # load_dotenv()
@@ -142,6 +146,7 @@ def register():
 
         # create users directory
         os.makedirs(f"{USER_FILES_DIR}/{name}")
+        os.makedirs(f"{USER_FILES_DIR}/{name}/{PREVIEW_DIRNAME}")
 
         # get dictionary users = User.query.all()
         flash('User successfully added')
@@ -157,7 +162,6 @@ def download_pdf():
 
     # Send the PDF file to the user
     try:
-        print(os.getcwd())
         directory = f'{os.getcwd()}/{USER_FILES_DIR}/{session["username"]}'
         return send_from_directory(directory, f"{filename}.pdf", as_attachment=True)
         
@@ -203,7 +207,6 @@ def process_data(userInfo):
         code_1 = code_1.replace("#G#", groups_symbols[group_nr])
         for var_index, var in enumerate(variables):
             # pick a random value of a variable
-            print(f"hello{var}")
             random_value = random.randrange(int(minimum_values[var_index]), int(maximum_values[var_index]) + 1)
             code_1 = code_1.replace(f"#{var}#", str(random_value))    
         result_code += code_1 + "\n" + "\n\\newpage\n"
@@ -249,7 +252,6 @@ def process_data(userInfo):
 @app.route('/generate-preview/<path:userInfo>', methods=['POST'])
 def generate_preview(userInfo):
     userInfo = json.loads(userInfo)
-    filename = userInfo['filename']
     groups = int(userInfo['groups'])
     variables = userInfo['vars'].split()
     minimum_values = userInfo['mins'].split()
@@ -258,28 +260,18 @@ def generate_preview(userInfo):
     groups_symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
     result_code = ""
 
-    # check if filename is already used in the database
-    filename_check=Tests.query.filter_by(filename=filename).first()
-
-    if (filename_check != None):
-        return {
-            'status' : "error",
-            'response' : "Filename is already used"
-        }
-
     for group_nr in range(groups):
         random.seed()
         code_1 = code
         code_1 = code_1.replace("#G#", groups_symbols[group_nr])
         for var_index, var in enumerate(variables):
             # pick a random value of a variable
-            print(f"hello{var}")
             random_value = random.randrange(int(minimum_values[var_index]), int(maximum_values[var_index]) + 1)
             code_1 = code_1.replace(f"#{var}#", str(random_value))    
         result_code += code_1 + "\n" + "\n\\newpage\n"
 
-    x = re.findall(r"@([^@]+)@", result_code)
-    for match in x:
+    expressions = re.findall(r"@([^@]+)@", result_code)
+    for match in expressions:
         result_code = result_code.replace(f"@{match}@", str(parser.parse(match).evaluate({})))
 
     # set margins
@@ -297,17 +289,15 @@ def generate_preview(userInfo):
     # Add the LaTeX code to the document
     doc.append(NoEscape(result_code))
 
+    preview_dir=f'{USER_FILES_DIR}/{session["username"]}/{PREVIEW_DIRNAME}'
     try:
-        doc.generate_pdf(f'{USER_FILES_DIR}/{session["username"]}/{filename}', clean_tex=False)
-        new_test = Tests(userid=session["user_id"], filename=filename, code = code, date=datetime.now())
-        db.session.add(new_test)
-        db.session.commit()
+        doc.generate_pdf(f'{preview_dir}/preview', clean_tex=False)
         return {
             'status' : "ok",
             'response' : "ok"
         }
     except Exception as e:
-        errors = get_latex_errors(f'{USER_FILES_DIR}/{session["username"]}/{filename}.log')
+        errors = get_latex_errors(f'{preview_dir}/preview.log')
         print(errors)
         #os.remove(f'{USER_FILES_DIR}/{session["username"]}/{filename}.pdf')
         return {
