@@ -151,6 +151,12 @@ button[type="submit"]:hover {
   width: 100%;
   }
 
+
+#groups-row {
+  margin-top: 1px;
+  margin-bottom: 3px;
+}
+
 #LateXCode {
   height: 30em;
 }

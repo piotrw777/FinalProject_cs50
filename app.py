@@ -1,23 +1,28 @@
 from helpers import login_required, get_latex_errors
 import os, json
-from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, url_for, send_from_directory, jsonify
+from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, jsonify
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
 import random
-import string
+from pylatex import Document, Package, Command
+from pylatex.utils import NoEscape
 import re
-from itsdangerous import URLSafeTimedSerializer
-from dotenv import load_dotenv
-from sqlalchemy import event
-from sqlalchemy.sql import text
+from datetime import datetime
 from py_expression_eval import Parser
 
-from pylatex import Document, Section, Subsection, Command, Package
-from pylatex.document import Document
-from pylatex.utils import NoEscape
+#from itsdangerous import URLSafeTimedSerializer
+#from dotenv import load_dotenv
+#from sqlalchemy import event
+#from sqlalchemy.sql import text
+#import string
 
-from datetime import datetime
+
+
+#from pylatex.document import Document
+
+
+
 
 USER_FILES_DIR="user_files"
 PREVIEW_DIRNAME="preview"
@@ -73,7 +78,14 @@ def after_request(response):
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html")
+    # get list of files
+    tests  = Tests.query.filter_by(userid = session["user_id"]).all()
+    tests_pom = []
+
+    for test in tests:
+        tests_pom.append(test.__dict__)
+
+    return render_template("index.html", saved_files=tests_pom)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -99,7 +111,15 @@ def login():
         session["user_id"] = user.id
         session["username"] = username
         flash('You are logged in successfully')
-        return render_template("index.html", name=username)
+
+        # get list of files
+        tests  = Tests.query.filter_by(userid = session["user_id"]).all()
+        tests_pom = []
+
+        for test in tests:
+            tests_pom.append(test.__dict__)
+
+        return render_template("index.html", name=username, saved_files=tests_pom)
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -304,6 +324,18 @@ def generate_preview(userInfo):
             'status' : "error",
             'response' : errors
         }
+
+
+@app.route('/get-latex-code/<path:userInfo>', methods=['POST'])
+def get_latex_code(userInfo):
+    userInfo = json.loads(userInfo)
+    filename = userInfo['filename']
+    code=Tests.query.filter_by(userid=session["user_id"], filename=filename).first().code
+
+    return {
+        'status' : "ok",
+        'response' : code
+     }
 
 
 @app.route("/tests", methods=["GET", "POST"])

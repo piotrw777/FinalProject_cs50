@@ -252,9 +252,40 @@ function generate_preview() {
     });
 }
 
+function apply_template() {
+    var selected_file = document.getElementById("saved_files");
+    var filename = selected_file.options[selected_file.selectedIndex].text;
+    var latex_code = document.getElementById("LateXCode")
+    var userData = {
+        'filename' : filename
+    };
+
+    //get code from the server
+    fetch(encodeURIComponent(`/get-latex-code/${JSON.stringify(userData)}`), {
+        headers : {
+            'Content-Type' : 'application/json'
+        },
+        method : 'POST',
+        body : userData
+    })
+    .then(function (response) {
+        return response.text();
+    }).then(function (text) {
+        console.log(text)
+        const obj = JSON.parse(text)
+        if (obj["status"] === "ok") {
+            latex_code.innerHTML = obj["response"]
+        } else {
+            alert(obj["response"])
+        }
+    });
+
+}
+
 function addEventListeners() {
     setInterval(update_variables_forms, 100);
-    setInterval(validate_data, 5000);
+    setInterval(validate_data, 3000);
+    setInterval(validate_filename, 3000);
     document.querySelectorAll('.download-button').forEach(
         function(button) {
             button.onclick = function() {
