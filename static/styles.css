@@ -211,3 +211,16 @@ button[type="submit"]:hover {
   left: 20%;
   right: 20%;
 }
+
+.validators {
+  padding-top: 2px;
+  padding-left: 0px;
+}
+
+.validator-valid {
+  color: rgb(35, 209, 49);
+}
+
+.validator-invalid {
+  color: red;
+}

@@ -76,8 +76,6 @@ function update_variables_forms() {
     const variables_to_remove = setDifference(VARIABLES, new_variables)
     const variables_to_add = setDifference(new_variables, VARIABLES)
 
-    variables_to_remove.forEach((currentElement) => { console.log(currentElement) })
-
     variables_to_add.forEach((currentElement) => { 
         VARIABLES.add(currentElement)
         createForm(currentElement); })
@@ -195,10 +193,9 @@ function sendUserData() {
     .then(function (response) {
         return response.text();
     }).then(function (text) {
-        console.log(text)
         const obj = JSON.parse(text)
         if (obj["status"] === "ok") {
-            window.location.assign('/download_pdf?filename=' + filename)
+            window.location.assign('/download-pdf?filename=' + filename)
         } else {
             alert(obj["response"])
         }
@@ -241,7 +238,6 @@ function generate_preview() {
     .then(function (response) {
         return response.text();
     }).then(function (text) {
-        console.log(text)
         const obj = JSON.parse(text)
         if (obj["status"] === "ok") {
             preview = document.getElementById('preview')
@@ -271,10 +267,10 @@ function apply_template() {
     .then(function (response) {
         return response.text();
     }).then(function (text) {
-        console.log(text)
         const obj = JSON.parse(text)
         if (obj["status"] === "ok") {
             latex_code.innerHTML = obj["response"]
+            latex_code.value = obj["response"]
         } else {
             alert(obj["response"])
         }
@@ -286,15 +282,122 @@ function addEventListeners() {
     setInterval(update_variables_forms, 100);
     setInterval(validate_data, 3000);
     setInterval(validate_filename, 3000);
+
+    // assign function to download buttons
     document.querySelectorAll('.download-button').forEach(
         function(button) {
             button.onclick = function() {
-                button.innerHTML = button.id;
-                window.location.assign('/download_pdf?filename=' + button.id); }});
+                window.location.assign('/download-pdf?filename=' + button.id); }});
+
+    // assign function to delete buttons
+    document.querySelectorAll('.delete-button').forEach(
+        function(button) {
+            button.onclick = function() {
+                window.location.assign('/delete-pdf?filename=' + button.id); }});
 
     //closing alerts
     let closeButton = document.querySelector('.close');
     closeButton.addEventListener('click', function() {
     document.querySelector('.alert').remove(); })};
+
+
+function submitpass() {
+    var password = document.getElementById("password").value
+
+    if (validate_password(password)) {
+        alert('password ok')
+
+    var userData = {
+        'username' : document.getElementById("username").value,
+        'email' : document.getElementById("email").value,
+        'password' : document.getElementById("password").value,
+        'confirmation' : document.getElementById("confirmation").value
+    };
+
+    //get code from the server
+    fetch(encodeURIComponent(`/register/${JSON.stringify(userData)}`), {
+        headers : {
+            'Content-Type' : 'application/json'
+        },
+        method : 'POST',
+        body : userData
+    })
+    .then(function (response) {
+        return response.text();
+    }).then(function (text) {
+        const obj = JSON.parse(text)
+        if (obj["status"] === "ok") {
+            window.location.assign('/login')
+        } else {
+            alert(obj["response"])
+        }
+    });
+      
+    } else {
+        alert('password NOT OK, idziemy po ciebie.')
+    }
+}
+
+function  validate_password(password) {
+    var ret_val = true;
+    var password_field = document.getElementById("password")
+
+    var small_letter_field = document.getElementById("validator-small-letter")
+    var capital_letter_field = document.getElementById("validator-capital-letter")
+    var digit_field = document.getElementById("validator-digit")
+    var special_character_field = document.getElementById("validator-special-character")
+    var length_field = document.getElementById("validator-length")
+
+    const lower_case_letter = /[a-z]/g;
+    const capital_letter = /[A-Z]/g
+    const digit = /[0-9]/g
+    const special_character = /[\{\}\[\]\-()@#$%^&*_+=;:"'./<>?\|`\\!]/g
+
+    if (password.match(lower_case_letter)) {
+        small_letter_field.classList.remove("validator-invalid");
+        small_letter_field.classList.add("validator-valid");
+      } else {
+        small_letter_field.classList.remove("validator-valid");
+        small_letter_field.classList.add("validator-invalid");
+        ret_val = false;
+    }
+
+    if (password.match(capital_letter)) {
+        capital_letter_field.classList.remove("validator-invalid");
+        capital_letter_field.classList.add("validator-valid");
+      } else {
+        capital_letter_field.classList.remove("validator-valid");
+        capital_letter_field.classList.add("validator-invalid");
+        ret_val = false;
+    }
+
+    if (password.match(digit)) {
+        digit_field.classList.remove("validator-invalid");
+        digit_field.classList.add("validator-valid");
+      } else {
+        digit_field.classList.remove("validator-valid");
+        digit_field .classList.add("validator-invalid");
+        ret_val = false;
+    }
+
+    if (password.match(special_character)) {
+        special_character_field.classList.remove("validator-invalid");
+        special_character_field.classList.add("validator-valid");
+      } else {
+        special_character_field.classList.remove("validator-valid");
+        special_character_field .classList.add("validator-invalid");
+        ret_val = false;
+    }
+
+    if (password.length >= 8) {
+        length_field.classList.remove("validator-invalid");
+        length_field.classList.add("validator-valid");
+      } else {
+        length_field.classList.remove("validator-valid");
+        length_field .classList.add("validator-invalid");
+        ret_val = false;
+    }
+    return ret_val;
+}
 
 document.addEventListener('DOMContentLoaded', addEventListeners);

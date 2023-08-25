@@ -11,6 +11,7 @@
             <th class="text-start">Filename</th>
             <th class="text-end">Date</th>
             <th class="text-end">Download</th>
+            <th class="text-end">Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -19,6 +20,7 @@
             <td class="text-start">{{ test["filename"] }}</td>
             <td class="text-end">{{ test["date"] }}</td>
             <td><button type="button" class="btn btn-success download-button" id = "{{test["filename"]}}">Download</button></td>
+            <td><button type="button" class="btn btn-warning delete-button" id = "delete-{{test["filename"]}}">Delete</button></td>
         </tr>
 {% endfor %}      
     </tbody>

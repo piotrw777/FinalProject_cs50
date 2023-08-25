@@ -17,12 +17,7 @@ from py_expression_eval import Parser
 #from sqlalchemy.sql import text
 #import string
 
-
-
 #from pylatex.document import Document
-
-
-
 
 USER_FILES_DIR="user_files"
 PREVIEW_DIRNAME="preview"
@@ -137,27 +132,40 @@ def logout():
     return redirect("/")
 
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
+@app.route("/register", methods=["GET"])
+def register_screen():
+    return render_template("register.html")
+
+
+@app.route("/register/<path:userInfo>", methods=["POST"])
+def register_user(userInfo):
     """Register user"""
     if request.method == "POST":
         # get variables from the form
-        name = request.form['username']
-        email = request.form['email']
-        password = request.form['password']
-        confirmation = request.form['confirmation']
+        userInfo = json.loads(userInfo)
+
+        name = userInfo['username']
+        email = userInfo['email']
+        password = userInfo['password']
+        confirmation = userInfo['confirmation']
 
         if (User.query.filter_by(name=name).first() != None):
-            flash('User already exists')
-            return render_template("register.html", msg = "error")
+            return {
+                'status' : "error",
+                'response' : "User already exist"
+            }
         
         if (User.query.filter_by(email=email).first() != None):
-            flash('User with given email already exists')
-            return render_template("register.html", msg = "error")
+            return {
+                'status' : "error",
+                'response' : "User with given email already exists"
+            }
         
         if (password != confirmation):
-            flash('Passwords don\'t match')
-            return render_template("register.html", msg = "error")
+            return {
+                'status' : "error",
+                'response' : "Passwords don\'t match!"
+            }
 
         # add user to the database
         new_user = User(name=name, email=email, password=generate_password_hash(password))
@@ -168,14 +176,13 @@ def register():
         os.makedirs(f"{USER_FILES_DIR}/{name}")
         os.makedirs(f"{USER_FILES_DIR}/{name}/{PREVIEW_DIRNAME}")
 
-        # get dictionary users = User.query.all()
-        flash('User successfully added')
-        return render_template("login.html", msg = "success")
-    else:
-        return render_template("register.html")
+        return {
+            'status' : "ok",
+            'response' : "Knastera"
+        }
+    
 
-
-@app.route('/download_pdf')
+@app.route('/download-pdf')
 def download_pdf():
     # Get the PDF filename from the request
     filename = request.args.get('filename')
@@ -188,6 +195,30 @@ def download_pdf():
     except Exception as e:
         # There was an error sending the PDF file, so redirect the user to the error page
         return redirect('/error')
+
+
+@app.route('/delete-pdf')
+def delete_pdf():
+    # Get the PDF filename from the request
+    filename = request.args.get('filename')
+    filename = filename[7:]
+    directory = f'{os.getcwd()}/{USER_FILES_DIR}/{session["username"]}'
+
+    # remove the files
+    try:
+        os.remove(f"{directory}/{filename}.aux")
+        os.remove(f"{directory}/{filename}.log")
+        os.remove(f"{directory}/{filename}.pdf")
+        os.remove(f"{directory}/{filename}.tex")
+    except OSError:
+        pass
+
+    # remove the file from database
+    test_record=Tests.query.filter_by(userid=session["user_id"], filename=filename).first()
+    db.session.delete(test_record)
+    db.session.commit()
+        
+    return redirect("/tests")
 
 
 @app.route('/generate_pdf')
@@ -213,7 +244,7 @@ def process_data(userInfo):
     result_code = ""
 
     # check if filename is already used in the database
-    filename_check=Tests.query.filter_by(filename=filename).first()
+    filename_check=Tests.query.filter_by(userid=session["user_id"], filename=filename).first()
 
     if (filename_check != None):
         return {
