@@ -302,10 +302,10 @@ function addEventListeners() {
 
 
 function submitpass() {
+    
     var password = document.getElementById("password").value
 
     if (validate_password(password)) {
-        alert('password ok')
 
     var userData = {
         'username' : document.getElementById("username").value,
@@ -329,12 +329,13 @@ function submitpass() {
         if (obj["status"] === "ok") {
             window.location.assign('/login')
         } else {
-            alert(obj["response"])
+            open_error_modal(obj["response"]);
         }
     });
-      
+
     } else {
-        alert('password NOT OK, idziemy po ciebie.')
+
+        open_error_modal("Password does not satisfy conditions");
     }
 }
 
@@ -398,6 +399,20 @@ function  validate_password(password) {
         ret_val = false;
     }
     return ret_val;
+}
+
+function open_error_modal(error_message) {
+    document.getElementById("error-message").innerHTML = error_message
+    document.getElementById("backdrop").style.display = "block"
+    document.getElementById("exampleModal").style.display = "block"
+    document.getElementById("exampleModal").classList.add("show")
+}
+
+function closeModal() {
+    document.getElementById("error-message").innerHTML = ""
+    document.getElementById("backdrop").style.display = "none"
+    document.getElementById("exampleModal").style.display = "none"
+    document.getElementById("exampleModal").classList.remove("show")
 }
 
 document.addEventListener('DOMContentLoaded', addEventListeners);

@@ -18,6 +18,12 @@ https://www.youtube.com/watch?v=JsZ1C9O_2XE
 Python evaluation
 https://pypi.org/project/py-expression-eval/
 
+Boostrap Modals
+https://github.com/Ara225/mini-frontend-projects/blob/master/2-bootstrap-modal-without-jQuery/bootstrap-modal-without-jQuery.html
+
+Speed up loading background image
+https://wpspeedmatters.com/speed-up-background-images/
+
 SETUP SERVER
 Run the script setup_server.sh
 This will install all necessary packages needed for server to run.
@@ -37,3 +43,5 @@ flask run
 Or use the script that will do this automatically:
 
 ./start_server.txt
+
+public ip: 54.162.243.124

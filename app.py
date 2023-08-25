@@ -149,6 +149,18 @@ def register_user(userInfo):
         password = userInfo['password']
         confirmation = userInfo['confirmation']
 
+        if (name == None):
+            return {
+                'status' : "error",
+                'response' : "Empty username"
+            }
+        
+        if (email == None):
+            return {
+                'status' : "error",
+                'response' : "Empty email address"
+            }
+
         if (User.query.filter_by(name=name).first() != None):
             return {
                 'status' : "error",
