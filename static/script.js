@@ -65,14 +65,10 @@ var date = new Date(0)
 function update_variables_forms() {
     const date_now = Date.now();
     
-    console.log(date)
-    console.log(date_now)
-
     if (date_now - date < 1000) {
         return;
     }
 
-    console.log('update_variable_forms')
     date = Date.now()
 
     const str = document.getElementById("LateXCode").value;
@@ -312,8 +308,11 @@ function addEventListeners() {
 
     //closing alerts
     let closeButton = document.querySelector('.close');
-    closeButton.addEventListener('click', function() {
-    document.querySelector('.alert').remove(); })};
+
+    if (closeButton != null) {
+        closeButton.addEventListener('click', function() {
+        document.querySelector('.alert').remove(); })};
+    }
 
 
 function submitpass() {
