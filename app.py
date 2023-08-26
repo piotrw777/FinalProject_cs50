@@ -149,13 +149,13 @@ def register_user(userInfo):
         password = userInfo['password']
         confirmation = userInfo['confirmation']
 
-        if (name == None):
+        if (name == ""):
             return {
                 'status' : "error",
                 'response' : "Empty username"
             }
         
-        if (email == None):
+        if (email == ""):
             return {
                 'status' : "error",
                 'response' : "Empty email address"

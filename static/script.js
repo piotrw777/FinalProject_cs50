@@ -300,43 +300,79 @@ function addEventListeners() {
     closeButton.addEventListener('click', function() {
     document.querySelector('.alert').remove(); })};
 
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+        currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+    }
+
 
 function submitpass() {
     
     var password = document.getElementById("password").value
+    var errormsg = false;
 
-    if (validate_password(password)) {
-
-    var userData = {
-        'username' : document.getElementById("username").value,
-        'email' : document.getElementById("email").value,
-        'password' : document.getElementById("password").value,
-        'confirmation' : document.getElementById("confirmation").value
-    };
-
-    //get code from the server
-    fetch(encodeURIComponent(`/register/${JSON.stringify(userData)}`), {
-        headers : {
-            'Content-Type' : 'application/json'
-        },
-        method : 'POST',
-        body : userData
-    })
-    .then(function (response) {
-        return response.text();
-    }).then(function (text) {
-        const obj = JSON.parse(text)
-        if (obj["status"] === "ok") {
-            window.location.assign('/login')
-        } else {
-            open_error_modal(obj["response"]);
-        }
-    });
-
-    } else {
-
-        open_error_modal("Password does not satisfy conditions");
+    if ((errormsg = validate_username(errormsg)) != true) {
+        open_modal("error-modal", errormsg);
+    } else if (! validate_email()) {
+        open_modal("error-modal", "Invalid email address");
+    } else  if (! validate_password(password)) {
+        open_modal("error-modal", "Password does not satisfy conditions");
+    }  else {
+        var userData = {
+            'username' : document.getElementById("username").value,
+            'email' : document.getElementById("email").value,
+            'password' : document.getElementById("password").value,
+            'confirmation' : document.getElementById("confirmation").value
+        };
+    
+        //get code from the server
+        fetch(encodeURIComponent(`/register/${JSON.stringify(userData)}`), {
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+            method : 'POST',
+            body : userData
+        })
+        .then(function (response) {
+            return response.text();
+        }).then(function (text) {
+            const obj = JSON.parse(text)
+            if (obj["status"] === "ok") {
+                // window.location.replace('/login')
+                open_modal("success-register-modal", "User successfully added")
+            } else {
+                open_modal("error-modal", obj["response"]);
+            }
+        });
     }
+}
+
+function validate_username() {
+    var username_field = document.getElementById("username")
+    var username = username_field.value
+
+    if (username === "") {
+        return  "Empty username"
+    } else if  (username.match(/[\s]/g)) {
+        return "Username cannot contain white characters"
+    } else {
+        return true;
+    }
+}
+
+function validate_email() {
+    var email_field = document.getElementById("email")
+    var email = email_field.value
+    var email_regex = /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/gm
+
+    if  (email.match(email_regex)) {
+        return true;
+    }
+
+    return false;
 }
 
 function  validate_password(password) {
@@ -401,18 +437,18 @@ function  validate_password(password) {
     return ret_val;
 }
 
-function open_error_modal(error_message) {
-    document.getElementById("error-message").innerHTML = error_message
+function open_modal(modal_id, message) {
+    document.getElementById(`${modal_id}-message`).innerHTML = message
     document.getElementById("backdrop").style.display = "block"
-    document.getElementById("exampleModal").style.display = "block"
-    document.getElementById("exampleModal").classList.add("show")
+    document.getElementById(modal_id).style.display = "block"
+    document.getElementById(modal_id).classList.add("show")
 }
 
-function closeModal() {
-    document.getElementById("error-message").innerHTML = ""
+function closeModal(modal_id) {
+    document.getElementById(`${modal_id}-message`).innerHTML = ""
     document.getElementById("backdrop").style.display = "none"
-    document.getElementById("exampleModal").style.display = "none"
-    document.getElementById("exampleModal").classList.remove("show")
+    document.getElementById(modal_id).style.display = "none"
+    document.getElementById(modal_id).classList.remove("show")
 }
 
 document.addEventListener('DOMContentLoaded', addEventListeners);

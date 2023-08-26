@@ -12,24 +12,47 @@
 </button>-->
 
 <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog">
+<div class="modal fade" id="error-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Error</h5>
-        <button type="button" class="close" aria-label="Close"  onclick="closeModal()">
+        <h5 class="modal-title" id="error-modal-title">Error</h5>
+        <button type="button" class="close" aria-label="Close"  onclick="closeModal('error-modal')">
           <span aria-hidden="true">×</span>
         </button>
       </div>
-      <div class="modal-body" id="error-message">
+      <div class="modal-body" id="error-modal-message">
         This is error message
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('error-modal')">Close</button>
       </div>
     </div>
   </div>
 </div>
 <div class="modal-backdrop fade show" id="backdrop"  style="display: none;"></div>
-  <!-- #### -->
-
+  <!-- end modal #### -->
+  <!-- Modal -->
+  <div class="modal fade" id="success-register-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="success-register-modal-title">Success</h5>
+          <button type="button" class="close" aria-label="Close"  onclick="closeModal('success-register-modal')">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body" id="success-register-modal-message">
+          This is success message
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" onclick="location.href='/login'">Go back to login page</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" id="backdrop"  style="display: none;"></div>
+    <!-- end modal #### -->
   <div class="col-lg-6 col-md-10 col-sm-12">
     <div class="card">
       <div class="card-header">Register</div>
@@ -68,11 +91,16 @@
                 </li>
               </ul>
             </div>
-            <button type="button" class="btn btn-primary" onclick="submitpass()">Register</button>
-            <div id="question">
-              <p>
-                <a href="\login">Go back</a>
-              </p>
+            <div class="container justify-content-center">
+              <button type="button" class="btn btn btn-primary btn-lg btn-block" onclick="submitpass()"> Register </button>
+              <div class="container justify-content-center" id="go-back-row">
+                <div id="question">
+                  <p>
+                    <a href="\login">Go back</a>
+                  </p>
+              </div>
+              </div>
+
             </div>
         </form>
       </div>

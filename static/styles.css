@@ -224,3 +224,15 @@ button[type="submit"]:hover {
 .validator-invalid {
   color: red;
 }
+
+#success-register-modal-title {
+  color : green;
+}
+
+#error-modal-title {
+  color : red;
+}
+
+#go-back-row {
+  margin-top: 0px;
+}
