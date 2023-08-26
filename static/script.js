@@ -34,11 +34,13 @@ function createForm(variable) {
     input_min.setAttribute("type", "text");
     input_min.setAttribute("class", "form-control");
     input_min.setAttribute("id", "min-" + variable);
+    input_min.setAttribute("oninput","validate_data()")
 
     input_max.setAttribute("placeholder", "max value");
     input_max.setAttribute("type", "text");
     input_max.setAttribute("class", "form-control");
     input_max.setAttribute("id", "max-" + variable);
+    input_max.setAttribute("oninput","validate_data()")
 
     error_min.setAttribute("id", "error-min-" + variable)
     error_min.setAttribute("class", "error")
@@ -58,7 +60,21 @@ function createForm(variable) {
     div3.append(error_max);
 };
 
+var date = new Date(0)
+
 function update_variables_forms() {
+    const date_now = Date.now();
+    
+    console.log(date)
+    console.log(date_now)
+
+    if (date_now - date < 1000) {
+        return;
+    }
+
+    console.log('update_variable_forms')
+    date = Date.now()
+
     const str = document.getElementById("LateXCode").value;
     const regexp = /#(.*?)#/g;
     const matches = Array.from(str.matchAll(regexp));
@@ -110,6 +126,7 @@ function validate_filename() {
 }
 
 function validate_data() {
+    console.log('validation of data')
     let ret_val = true;
 
     VARIABLES.forEach((currentElement) => {
@@ -156,6 +173,7 @@ function validate_min_max(variable) {
 };
 
 function sendUserData() {
+    update_variables_forms()
     let vars = "";
     let mins = "";
     let maxs = "";
@@ -279,9 +297,6 @@ function apply_template() {
 }
 
 function addEventListeners() {
-    setInterval(update_variables_forms, 100);
-    setInterval(validate_data, 3000);
-    setInterval(validate_filename, 3000);
 
     // assign function to download buttons
     document.querySelectorAll('.download-button').forEach(
@@ -299,14 +314,6 @@ function addEventListeners() {
     let closeButton = document.querySelector('.close');
     closeButton.addEventListener('click', function() {
     document.querySelector('.alert').remove(); })};
-
-function sleep(milliseconds) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-        currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-    }
 
 
 function submitpass() {

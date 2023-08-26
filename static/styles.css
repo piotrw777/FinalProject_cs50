@@ -159,6 +159,7 @@ button[type="submit"]:hover {
 
 #LateXCode {
   height: 30em;
+  margin-bottom: 1em;
 }
 
 .container {
@@ -182,7 +183,7 @@ button[type="submit"]:hover {
 }
 
 #preview {
-  height:80%;
+  height:50em;
   width: 98%;
 }
 
