@@ -167,9 +167,6 @@ button[type="submit"]:hover {
 }
 
 .form-row {
-  border-style: dotted;
-  border-radius: 1em;
-  border-color: #2c5db9;
   margin-bottom: 1em;
 }
 
@@ -188,23 +185,14 @@ button[type="submit"]:hover {
 }
 
 #preview-column {
-  border: 3px;
-  border-style: solid;
-  border-color: yellow;
   margin: 3px;
 }
 
 #variables_colum {
-  border: 3px;
-  border-style: solid;
-  border-color: green;
   margin: 3px;
 }
 
 #code_column {
-  border: 3px;
-  border-style: solid;
-  border-color: red;
   margin: 3px;
 }
 
@@ -234,6 +222,18 @@ button[type="submit"]:hover {
   color : red;
 }
 
+#help-modal-title {
+  color: blue;
+}
+
 #go-back-row {
   margin-top: 0px;
+}
+
+.btn-outline-primary {
+  margin-left: 1em;
+}
+
+#logout-button {
+  margin-left: 1em;
 }

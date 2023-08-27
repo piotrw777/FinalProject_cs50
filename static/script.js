@@ -444,14 +444,15 @@ function  validate_password(password) {
 }
 
 function open_modal(modal_id, message) {
-    document.getElementById(`${modal_id}-message`).innerHTML = message
+    if (message != null) {
+        document.getElementById(`${modal_id}-message`).innerHTML = message
+    }
     document.getElementById("backdrop").style.display = "block"
     document.getElementById(modal_id).style.display = "block"
     document.getElementById(modal_id).classList.add("show")
 }
 
 function closeModal(modal_id) {
-    document.getElementById(`${modal_id}-message`).innerHTML = ""
     document.getElementById("backdrop").style.display = "none"
     document.getElementById(modal_id).style.display = "none"
     document.getElementById(modal_id).classList.remove("show")
