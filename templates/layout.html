@@ -53,27 +53,22 @@
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 {% if session["user_id"] %}
                 <li class="nav-item">
-                  <a class="nav-link" href="#">User: {{ session["username"] }}</a>
+                  <a class="nav-link">User: <b>{{ session["username"] }}</b></a>
+                </li>
+                <li class="nav-item">
+                  <button type="button" onclick="location.href='/'" class="btn btn-outline-primary">Home</button>
                 </li>
                   <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="/">Home</a>
+                    <button type="button" onclick="location.href='/tests'" class="btn btn-outline-primary">Tests</button>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link" href="/tests">Tests</a>
+                    <button type="button" onclick="open_modal('help-modal')" class="btn btn-outline-primary">Help</button>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link disabled">Disabled</a>
-                  </li>
-                  <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
-                    <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="#">Action</a></li>
-                      <li><a class="dropdown-item" href="#">Another action</a></li>
-                      <li><a class="dropdown-item" href="#">Something else here</a></li>
-                    </ul>
+                    <a href="\logout" class="btn btn-primary" id="logout-button" role="button">Logout</a>
                   </li>
                 </ul>
-                <a href="\logout" class="btn btn-primary" role="button">Logout</a>
+                
                 {% else %}
                 <a href="\register" class="btn btn-primary" role="button">Register</a>
                 {% endif %}
