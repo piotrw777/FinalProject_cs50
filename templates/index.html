@@ -6,7 +6,7 @@
 
 {% block main %}
 <div class="row">
-    <!-- Modal -->
+<!-- Modal -->
     <div class="modal fade" id="help-modal" tabindex="-1" aria-labelledby="helpModalLabel" aria-modal="true" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -53,21 +53,19 @@
       <!-- end modal #### -->
   <div class="col-xl-5 col-md-9 col-sm-12" id="code_column">
         <div class="row">
-          <div class="col-3">
-            <label for="filename">Filename</label>
-          </div>
-          <div class="col">
-            <input type="text " class="form-control" id="filename" placeholder="Provide a filename without an extension" oninput="validate_filename()">
-            <p id="filename-error"></p>
+          <div class="col-12">
+            <div class="form-label-group">
+              <input type="text " class="form-control" id="filename" placeholder="Provide a filename without an extension" oninput="validate_filename()">
+              <label for="filename">Filename</label>
+              <p id="filename-error"></p>
+            </div>
           </div>
         </div>
         <!-- Groups -->
         <div class="row" id="groups-row">
-          <div class="col-3">
-            <label for="nr_of_groups">Groups</label>
-          </div>
-          <div class="col-3">
+          <div class="col-6">
             <select class="form-control" id="nr_of_groups" name="groups">
+              <option value="" disabled selected>Nr of groups</option>
               <option value="1">1</option>
               <option value="2">2</option>
               <option value="3">3</option>

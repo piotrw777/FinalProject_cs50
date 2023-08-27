@@ -42,9 +42,8 @@ input[type="password"] {
   
 label {
   font-size: 1.2rem;
-  font-weight: 500;
+  font-weight: 400;
   color: black;
-  font-weight: bolder;
 }
 
 button[type="submit"] {
@@ -148,6 +147,8 @@ button[type="submit"]:hover {
 
 .row {
   margin-top: 1em;
+  margin-left: 0px;
+  margin-right: 0px;
   width: 100%;
   }
 
@@ -230,10 +231,8 @@ button[type="submit"]:hover {
   margin-top: 0px;
 }
 
-.btn-outline-primary {
+.nav-bar-button {
+  width: 7em;
   margin-left: 1em;
-}
-
-#logout-button {
-  margin-left: 1em;
+  margin-bottom: 2px;
 }
