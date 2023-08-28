@@ -160,6 +160,7 @@ button[type="submit"]:hover {
 
 #LateXCode {
   height: 30em;
+  margin-top: 15px;
   margin-bottom: 1em;
 }
 
@@ -195,6 +196,14 @@ button[type="submit"]:hover {
 
 #code_column {
   margin: 3px;
+
+}
+
+@media (max-width: 400px) {
+  #code_column {
+    padding-left: 0px;
+    padding-right: 0px;
+    }
 }
 
 #variable_div {
@@ -235,4 +244,25 @@ button[type="submit"]:hover {
   width: 7em;
   margin-left: 1em;
   margin-bottom: 2px;
+}
+
+@media (max-width: 850px) {
+  .nav-bar-button {
+    width: 90px;
+    margin-left: 2px;
+    margin-bottom: 2px;
+  }
+}
+
+#filename-column {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+#nr-of-groups-column {
+  padding-left: 0px;
+}
+
+#saved-files-column {
+  padding-right: 0px;
 }

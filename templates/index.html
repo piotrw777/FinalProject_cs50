@@ -53,7 +53,7 @@
       <!-- end modal #### -->
   <div class="col-xl-5 col-md-9 col-sm-12" id="code_column">
         <div class="row">
-          <div class="col-12">
+          <div class="col-12" id="filename-column">
             <div class="form-label-group">
               <input type="text " class="form-control" id="filename" placeholder="Provide a filename without an extension" oninput="validate_filename()">
               <label for="filename">Filename</label>
@@ -63,7 +63,7 @@
         </div>
         <!-- Groups -->
         <div class="row" id="groups-row">
-          <div class="col-6">
+          <div class="col-6" id="nr-of-groups-column">
             <select class="form-control" id="nr_of_groups" name="groups">
               <option value="" disabled selected>Nr of groups</option>
               <option value="1">1</option>
@@ -78,11 +78,9 @@
           </div>
 
         <!-- Saved files -->
-          <div class="col-3">
-            <label for="saved_files">Saved files</label>
-          </div>
-          <div class="col-3">
+          <div class="col-6" id="saved-files-column">
             <select class="form-control" id="saved_files" name="saved_files">
+              <option value="" disabled selected>Saved files</option>
               {% for file in saved_files %}
                 <option value="{{ file["t_file"] }}">{{ file["filename"] }}</option>
               {% endfor %}
