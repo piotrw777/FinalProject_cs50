@@ -221,6 +221,13 @@ function generate_preview() {
     let mins = "";
     let maxs = "";
 
+    code = document.getElementById("LateXCode").value
+    
+    if (code == "") {
+        alert('empty code')
+        return;
+    }
+
     if (validate_data() == false) {
         return;
     }
@@ -232,7 +239,7 @@ function generate_preview() {
         vars += variable_name + ' ';
     })
 
-    groups = Number(document.getElementById('nr_of_groups').selectedIndex) + 1;
+    groups = Number(document.getElementById('nr_of_groups').selectedIndex);
 
     var userData = {
         'code' : document.getElementById("LateXCode").value,
@@ -298,13 +305,19 @@ function addEventListeners() {
     document.querySelectorAll('.download-button').forEach(
         function(button) {
             button.onclick = function() {
-                window.location.assign('/download-pdf?filename=' + button.id); }});
+                window.location.assign('/download-pdf?filename=' + button.id.substring(1)); }});
 
     // assign function to delete buttons
     document.querySelectorAll('.delete-button').forEach(
         function(button) {
             button.onclick = function() {
-                window.location.assign('/delete-pdf?filename=' + button.id); }});
+                window.location.assign('/delete-pdf?filename=' + button.id.substring(8)); }});
+
+    // assign funtions to get-latex-code buttons
+    document.querySelectorAll('.get-tex-file-button').forEach(
+        function(button) {
+            button.onclick = function() {
+                window.location.assign('/get-tex-file?filename=' + button.id.substring(10)); }});
 
     //closing alerts
     let closeButton = document.querySelector('.close');

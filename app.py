@@ -195,10 +195,10 @@ def register_user(userInfo):
     
 
 @app.route('/download-pdf')
+@login_required
 def download_pdf():
     # Get the PDF filename from the request
     filename = request.args.get('filename')
-
     # Send the PDF file to the user
     try:
         directory = f'{os.getcwd()}/{USER_FILES_DIR}/{session["username"]}'
@@ -209,11 +209,27 @@ def download_pdf():
         return redirect('/error')
 
 
+@app.route('/get-tex-file')
+@login_required
+def get_tex_file():
+    # Get the PDF filename from the request
+    filename = request.args.get('filename')
+    directory = f'{os.getcwd()}/{USER_FILES_DIR}/{session["username"]}'
+    # Send the tex file to the user
+    try:
+        directory = f'{os.getcwd()}/{USER_FILES_DIR}/{session["username"]}'
+        return send_from_directory(directory, f"{filename}.tex", as_attachment=True)
+        
+    except Exception as e:
+        # There was an error sending the PDF file, so redirect the user to the error page
+        return redirect('/error')
+
+
 @app.route('/delete-pdf')
+@login_required
 def delete_pdf():
     # Get the PDF filename from the request
     filename = request.args.get('filename')
-    filename = filename[7:]
     directory = f'{os.getcwd()}/{USER_FILES_DIR}/{session["username"]}'
 
     # remove the files

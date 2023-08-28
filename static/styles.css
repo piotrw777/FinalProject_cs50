@@ -182,16 +182,18 @@ button[type="submit"]:hover {
 }
 
 #preview {
-  height:50em;
+  height:41em;
   width: 98%;
 }
 
 #preview-column {
   margin: 3px;
+  padding-top: 15px;
 }
 
 #variables_colum {
   margin: 3px;
+  padding-top: 8px;
 }
 
 #code_column {
@@ -243,7 +245,16 @@ button[type="submit"]:hover {
 .nav-bar-button {
   width: 7em;
   margin-left: 1em;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
+  margin-top: 1px;
+}
+
+#login-nav-bar-button {
+  margin-top: 5px;
+}
+
+#register-nav-bar-button {
+  margin-top: 5px;
 }
 
 @media (max-width: 850px) {
