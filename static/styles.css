@@ -152,6 +152,9 @@ button[type="submit"]:hover {
   width: 100%;
   }
 
+#main-row {
+  margin-top: 0px;
+}
 
 #groups-row {
   margin-top: 1px;
@@ -177,6 +180,11 @@ button[type="submit"]:hover {
   border: red;
 }
 
+#groups-error {
+  color: red;
+  margin-bottom: 0px;
+}
+
 .error {
   color: red;
 }
@@ -198,7 +206,7 @@ button[type="submit"]:hover {
 
 #code_column {
   margin: 3px;
-
+  padding-top: 0px;
 }
 
 @media (max-width: 400px) {

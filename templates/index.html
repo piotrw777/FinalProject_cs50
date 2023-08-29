@@ -5,8 +5,8 @@
 {% endblock %}
 
 {% block main %}
-<div class="row">
-<!-- Modal -->
+<div class="row" id="main-row">
+<!-- Help Modal -->
     <div class="modal fade" id="help-modal" tabindex="-1" aria-labelledby="helpModalLabel" aria-modal="true" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -50,7 +50,28 @@
       </div>
     </div>
     <div class="modal-backdrop fade show" id="backdrop"  style="display: none;"></div>
-      <!-- end modal #### -->
+      <!-- end help modal #### -->
+      <!-- Error Modal -->
+<div class="modal fade" id="error-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="error-modal-title">Error</h5>
+        <button type="button" class="close" aria-label="Close"  onclick="closeModal('error-modal')">
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+      <div class="modal-body" id="error-modal-message">
+        This is error message
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('error-modal')">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show" id="backdrop"  style="display: none;"></div>
+  <!-- end error modal #### -->
   <div class="col-xl-5 col-md-9 col-sm-12" id="code_column">
         <div class="row">
           <div class="col-12" id="filename-column">
@@ -64,7 +85,7 @@
         <!-- Groups -->
         <div class="row" id="groups-row">
           <div class="col-6" id="nr-of-groups-column">
-            <select class="form-control" id="nr_of_groups" name="groups">
+            <select class="form-control" id="nr_of_groups" name="groups" onchange="validate_groups()">
               <option value="" disabled selected>Nr of groups</option>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -75,6 +96,7 @@
               <option value="7">7</option>
               <option value="8">8</option>
             </select>
+            <p id="groups-error"></p>
           </div>
 
         <!-- Saved files -->

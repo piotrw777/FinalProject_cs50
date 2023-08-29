@@ -168,15 +168,35 @@ function validate_min_max(variable) {
     return ret_val;
 };
 
+function validate_groups() {
+    let groups = Number(document.getElementById('nr_of_groups').selectedIndex)
+
+    if (groups == 0) {
+        document.getElementById('groups-error').innerHTML = "Choose nr of groups"
+        return false;
+    }
+
+    document.getElementById('groups-error').innerHTML = ""
+    return true;
+}
+
 function sendUserData() {
     update_variables_forms()
     let vars = "";
     let mins = "";
     let maxs = "";
     let filename = document.getElementById("filename").value.trim();
+    let groups = Number(document.getElementById('nr_of_groups').selectedIndex);
 
-    if ((validate_filename() == false) || (validate_data() == false)) {
+    if ((validate_filename() == false) || (validate_data() == false) || validate_groups() == false) {
         return;
+    }
+
+    let code = document.getElementById("LateXCode").value
+
+    if (code.match(/^[\s]*$/g)) {
+        open_modal('error-modal', "Code must contain at least one non-white character")
+        return
     }
 
     // prepare string with variables info
@@ -186,11 +206,9 @@ function sendUserData() {
         vars += variable_name + ' ';
     })
 
-    groups = Number(document.getElementById('nr_of_groups').selectedIndex) + 1;
-
     var userData = {
         'filename' : filename,
-        'code' : document.getElementById("LateXCode").value,
+        'code' : code,
         'vars': vars, 
         'mins' : mins,
         'maxs' : maxs,
@@ -211,7 +229,8 @@ function sendUserData() {
         if (obj["status"] === "ok") {
             window.location.assign('/download-pdf?filename=' + filename)
         } else {
-            alert(obj["response"])
+            console.log(obj["response"])
+            open_modal('error-modal', obj["response"])
         }
     });
 }
@@ -222,13 +241,13 @@ function generate_preview() {
     let maxs = "";
 
     code = document.getElementById("LateXCode").value
-    
-    if (code == "") {
-        alert('empty code')
-        return;
+
+    if (code.match(/^[\s]*$/g)) {
+        open_modal('error-modal', "Code must contain at least one non-white character")
+        return
     }
 
-    if (validate_data() == false) {
+    if (validate_groups() == false || validate_data() == false) {
         return;
     }
 
@@ -264,7 +283,8 @@ function generate_preview() {
             preview = document.getElementById('preview')
             preview.setAttribute("src", `/generate_pdf?filename=preview/preview`)
         } else {
-            alert(obj["response"])
+            let error_msg = obj["response"].replace('\n','<br>')
+            open_modal('error-modal', error_msg)
         }
     });
 }
@@ -296,7 +316,6 @@ function apply_template() {
             alert(obj["response"])
         }
     });
-
 }
 
 function addEventListeners() {
@@ -360,7 +379,6 @@ function submitpass() {
         }).then(function (text) {
             const obj = JSON.parse(text)
             if (obj["status"] === "ok") {
-                // window.location.replace('/login')
                 open_modal("success-register-modal", "User successfully added")
             } else {
                 open_modal("error-modal", obj["response"]);
@@ -463,12 +481,14 @@ function open_modal(modal_id, message) {
     document.getElementById("backdrop").style.display = "block"
     document.getElementById(modal_id).style.display = "block"
     document.getElementById(modal_id).classList.add("show")
+    document.body.classList.add("modal-open");
 }
 
 function closeModal(modal_id) {
     document.getElementById("backdrop").style.display = "none"
     document.getElementById(modal_id).style.display = "none"
     document.getElementById(modal_id).classList.remove("show")
+    document.body.classList.remove("modal-open");
 }
 
 document.addEventListener('DOMContentLoaded', addEventListeners);
