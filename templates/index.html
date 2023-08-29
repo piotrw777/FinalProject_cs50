@@ -7,51 +7,8 @@
 {% block main %}
 <div class="row" id="main-row">
 <!-- Help Modal -->
-    <div class="modal fade" id="help-modal" tabindex="-1" aria-labelledby="helpModalLabel" aria-modal="true" role="dialog">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="help-modal-title">Help</h5>
-            <button type="button" class="close" aria-label="Close"  onclick="closeModal('help-modal')">
-              <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div class="modal-body" id="help-modal-message">
-            <h5>Instructions</h5>
-            <ul>
-              <li>Write LaTeX code in the text field. What is written there is treated as if you
-                  wrote in the section <br><i>\begin{document}..\end{document}</i><br>                
-              </li>
-              <li>
-                If you want to add a variable which value will be randomly chosen among groups, use <br>
-                <i><b>#someVarName#</i></b><br>
-                syntax. The variable will appear in the variable column. Choose the desired range afterwards.
-                NOTE: Variable #G# is reserved for a group symbol.
-              </li>
-              <li>
-                If you want the expresion, which is dependend on variables' values to be evaluated, wrap it using
-                <i>'@'</i> symbol. For example, <br>
-                <i><b>@#a#*#b#@</i></b><br>
-                for a=2 and b=3, will result in 6 in the final document, not 2*3.
-                Inside @..@ use math operators, not LaTeX symbols.
-              </li>
-              <li>
-                Click <i>Generate tests</i> button to download and save the document or preview to view it only.
-                The list of all saved documents is in the Tests tab.
-                After saving the document you can use its code by choosing it from <i>Saved files</i> list
-                and then clicking <i>Apply template</i>
-              </li>
-            </ul>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="closeModal('help-modal')">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal-backdrop fade show" id="backdrop"  style="display: none;"></div>
-      <!-- end help modal #### -->
-      <!-- Error Modal -->
+{% include "help-modal.html" %}
+<!-- Error Modal -->
 <div class="modal fade" id="error-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
