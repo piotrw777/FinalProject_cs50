@@ -229,7 +229,6 @@ function sendUserData() {
         if (obj["status"] === "ok") {
             window.location.assign('/download-pdf?filename=' + filename)
         } else {
-            console.log(obj["response"])
             open_modal('error-modal', obj["response"])
         }
     });
@@ -335,8 +334,14 @@ function addEventListeners() {
     // assign funtions to get-latex-code buttons
     document.querySelectorAll('.get-tex-file-button').forEach(
         function(button) {
-            button.onclick = function() {
-                window.location.assign('/get-tex-file?filename=' + button.id.substring(10)); }});
+            button.onclick = async function() {
+                let filename = button.id.substring(10)
+                let response = await fetch('/get-tex-code?filename=' + filename)
+                let code = await response.text()
+                document.getElementById('get-tex-file-save-file-button').onclick = function() {
+                    window.location.assign('/get-tex-file?filename=' + filename);
+                }
+                open_modal('get-tex-file-modal', JSON.parse(code)['code'].replace('\n', '<br>'), `LaTeX code (${filename})`) }});
 
     //closing alerts
     let closeButton = document.querySelector('.close');
@@ -474,10 +479,15 @@ function  validate_password(password) {
     return ret_val;
 }
 
-function open_modal(modal_id, message) {
+function open_modal(modal_id, message, title) {
     if (message != null) {
         document.getElementById(`${modal_id}-message`).innerHTML = message
     }
+
+    if (title != null) {
+        document.getElementById(`${modal_id}-title`).innerHTML = title
+    }
+
     document.getElementById("backdrop").style.display = "block"
     document.getElementById(modal_id).style.display = "block"
     document.getElementById(modal_id).classList.add("show")

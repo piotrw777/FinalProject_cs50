@@ -285,3 +285,15 @@ button[type="submit"]:hover {
 #saved-files-column {
   padding-right: 0px;
 }
+
+#get-tex-file-modal-message {
+  white-space: pre-line;
+}
+
+@media (max-width: 768px) {
+  th.text-end,td.text-end{
+    padding-left: 2px;
+    padding-right: 2px;
+    color : green;
+  }
+}

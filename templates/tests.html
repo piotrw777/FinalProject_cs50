@@ -4,7 +4,29 @@
     Tests
 {% endblock %}
 
-{% block main %}          
+{% block main %}  
+  <!-- get-tex-file Modal -->
+  <div class="modal fade " id="get-tex-file-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="get-tex-file-modal-title">LaTeX code</h5>
+          <button type="button" class="close" aria-label="Close"  onclick="closeModal('get-tex-file-modal')">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body" id="get-tex-file-modal-message">
+          This is success message
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('get-tex-file-modal')">Close</button>
+          <button type="button" id="get-tex-file-save-file-button" class="btn btn-primary">Save file</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show" id="backdrop"  style="display: none;"></div>
+    <!-- end get-tex-file modal #### -->        
 <table class="table">
     <thead>
         <tr>
@@ -20,9 +42,9 @@
         <tr>
             <td class="text-start">{{ test["filename"] }}</td>
             <td class="text-end">{{ test["date"] }}</td>
-            <td><button type="button" class="btn btn-primary download-button" id = "${{test["filename"]}}">Download</button></td>
-            <td><button type="button" class="btn btn-success get-tex-file-button" id = "$tex-file-{{test["filename"]}}">LaTeX code</button></td>
-            <td><button type="button" class="btn btn-warning delete-button" id = "$delete-{{test["filename"]}}">Delete</button></td>
+            <td class="text-end"><button type="button" class="btn btn-primary download-button" id = "${{test["filename"]}}">Download</button></td>
+            <td class="text-end"><button type="button" class="btn btn-success get-tex-file-button text-nowrap" id = "$tex-file-{{test["filename"]}}">LaTeX code</button></td>
+            <td class="text-end"><button type="button" class="btn btn-warning delete-button" id = "$delete-{{test["filename"]}}">Delete</button></td>
         </tr>
 {% endfor %}      
     </tbody>

@@ -225,6 +225,22 @@ def get_tex_file():
         return redirect('/error')
 
 
+@app.route('/get-tex-code')
+@login_required
+def get_tex_code():
+    # Get the PDF filename from the request
+    filename = request.args.get('filename')
+    directory = f'{os.getcwd()}/{USER_FILES_DIR}/{session["username"]}'
+    # Send the tex file to the user
+    with open(f"{directory}/{filename}.tex",'r') as tex_code:
+        tex_code_str = tex_code.read()
+
+    return {
+        'status' : 'ok',
+        'code' : tex_code_str
+    }
+
+
 @app.route('/delete-pdf')
 @login_required
 def delete_pdf():
