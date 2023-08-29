@@ -188,6 +188,9 @@ def register_user(userInfo):
         os.makedirs(f"{USER_FILES_DIR}/{name}")
         os.makedirs(f"{USER_FILES_DIR}/{name}/{PREVIEW_DIRNAME}")
 
+        # send email verification
+
+
         return {
             'status' : "ok",
             'response' : "Knastera"
@@ -308,7 +311,14 @@ def process_data(userInfo):
 
     x = re.findall(r"@([^@]+)@", result_code)
     for match in x:
-        result_code = result_code.replace(f"@{match}@", str(parser.parse(match).evaluate({})))
+        try:
+            parse_str = str(parser.parse(match).evaluate({}))
+            result_code = result_code.replace(f"@{match}@", parse_str)
+        except Exception as e:
+            return {
+            'status' : "error",
+            'response' : "Error evaluating expression @..@"
+        }   
 
     # set margins
     geometry_options = {"tmargin": "3cm", "lmargin": "3cm", "bmargin": "3cm", "rmargin": "3cm"}
@@ -367,7 +377,14 @@ def generate_preview(userInfo):
 
     expressions = re.findall(r"@([^@]+)@", result_code)
     for match in expressions:
-        result_code = result_code.replace(f"@{match}@", str(parser.parse(match).evaluate({})))
+        try:
+            parse_str = str(parser.parse(match).evaluate({}))
+            result_code = result_code.replace(f"@{match}@", parse_str)
+        except Exception as e:
+            return {
+            'status' : "error",
+            'response' : "Error evaluating expression @..@"
+        }   
 
     # set margins
     geometry_options = {"tmargin": "3cm", "lmargin": "3cm", "bmargin": "3cm", "rmargin": "3cm"}

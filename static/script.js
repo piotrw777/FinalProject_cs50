@@ -229,12 +229,14 @@ function sendUserData() {
         if (obj["status"] === "ok") {
             window.location.assign('/download-pdf?filename=' + filename)
         } else {
-            open_modal('error-modal', obj["response"])
+            let error_msg = obj["response"].replace('\n','<br>')
+            open_modal('error-modal', error_msg)
         }
     });
 }
 
 function generate_preview() {
+    update_variables_forms()
     let vars = "";
     let mins = "";
     let maxs = "";
@@ -290,6 +292,12 @@ function generate_preview() {
 
 function apply_template() {
     var selected_file = document.getElementById("saved_files");
+
+    if (selected_file.selectedIndex == 0) {
+        open_modal('error-modal', 'Choose file')
+        return;
+    }
+
     var filename = selected_file.options[selected_file.selectedIndex].text;
     var latex_code = document.getElementById("LateXCode")
     var userData = {
