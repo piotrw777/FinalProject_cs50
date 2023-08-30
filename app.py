@@ -1,4 +1,4 @@
-from helpers import login_required, get_latex_errors
+from helpers import login_required, get_latex_errors, validate_password
 import os, json
 from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, jsonify
 from flask_session import Session
@@ -179,6 +179,12 @@ def register_user(userInfo):
                 'response' : "Passwords don\'t match!"
             }
 
+        if (validate_password(password) < 0):
+            return {
+                'status' : "error",
+                'response' : "Passwords does not satisfy conditions"
+            }
+
         # add user to the database
         new_user = User(name=name, email=email, password=generate_password_hash(password))
         db.session.add(new_user)
@@ -187,9 +193,9 @@ def register_user(userInfo):
         # create users directory
         os.makedirs(f"{USER_FILES_DIR}/{name}")
         os.makedirs(f"{USER_FILES_DIR}/{name}/{PREVIEW_DIRNAME}")
+        os.makedirs(f"{USER_FILES_DIR}/{name}/solutions")
 
         # send email verification
-
 
         return {
             'status' : "ok",
