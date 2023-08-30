@@ -3,6 +3,7 @@ body {
   background-size: auto;
   background-position: center;
   height: 100vh;
+  min-width: 600px;
   }
   
 .mt-5 {
