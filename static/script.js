@@ -337,7 +337,10 @@ function addEventListeners() {
     document.querySelectorAll('.delete-button').forEach(
         function(button) {
             button.onclick = function() {
-                window.location.assign('/delete-pdf?filename=' + button.id.substring(8)); }});
+                filename = button.id.substring(8)
+                open_modal('delete-file-modal', 'Are you sure to delete this file?', `Delete file ${filename}`)
+                document.getElementById('delete-file-button').onclick = function() {
+                    window.location.assign('/delete-pdf?filename=' + filename);}}});
 
     // assign funtions to get-latex-code buttons
     document.querySelectorAll('.get-tex-file-button').forEach(

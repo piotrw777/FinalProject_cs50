@@ -27,7 +27,29 @@
     </div>
   </div>
   <div class="modal-backdrop fade show" id="backdrop"  style="display: none;"></div>
-    <!-- end get-tex-file modal #### -->        
+    <!-- end get-tex-file modal #### --> 
+    <!-- Delete modal -->
+    <div class="modal fade " id="delete-file-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog">
+      <div class="modal-dialog modal-sm modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="delete-file-modal-title"></h5>
+            <button type="button" class="close" aria-label="Close"  onclick="closeModal('delete-file-modal')">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div class="modal-body" id="delete-file-modal-message">
+            This is success message
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="closeModal('delete-file-modal')">Close</button>
+            <button type="button" id="delete-file-button" class="btn btn-primary">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop fade show" id="backdrop"  style="display: none;"></div>
+    <!-- end delete-file-modal -->
 <table class="table">
     <thead>
         <tr>
