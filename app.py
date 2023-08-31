@@ -1,6 +1,6 @@
 from helpers import login_required, get_latex_errors, validate_password
 import os, json
-from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, jsonify
+from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, jsonify, escape
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -73,6 +73,8 @@ def after_request(response):
 @app.route("/")
 @login_required
 def index():
+    csrf_token = session.get('csrf_token')
+    print(f"token: {csrf_token}")
     # get list of files
     tests  = Tests.query.filter_by(userid = session["user_id"]).all()
     tests_pom = []
@@ -242,7 +244,7 @@ def get_tex_code():
     directory = f'{os.getcwd()}/{USER_FILES_DIR}/{session["username"]}'
     # Send the tex file to the user
     with open(f"{directory}/{filename}.tex",'r') as tex_code:
-        tex_code_str = tex_code.read()
+        tex_code_str = escape(tex_code.read())
 
     return {
         'status' : 'ok',
