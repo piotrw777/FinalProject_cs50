@@ -1,4 +1,4 @@
-from helpers import login_required, get_latex_errors
+from helpers import login_required, get_latex_errors, send_mail
 import os, json
 from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, jsonify
 from flask_session import Session
@@ -52,6 +52,8 @@ class User(db.Model):
     name = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=False, nullable=False)
+    verification_code = db.Column(db.Integer, unique=False, nullable=False)
+    verified = db.Column(db.Boolean, unique=False, nullable=False)
 
 class Tests(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -180,7 +182,8 @@ def register_user(userInfo):
             }
 
         # add user to the database
-        new_user = User(name=name, email=email, password=generate_password_hash(password))
+        verification_code = random.randrange(100000, 1000000)
+        new_user = User(name=name, email=email, password=generate_password_hash(password), verification_code=verification_code, verified=False)
         db.session.add(new_user)
         db.session.commit()
 
@@ -189,7 +192,10 @@ def register_user(userInfo):
         os.makedirs(f"{USER_FILES_DIR}/{name}/{PREVIEW_DIRNAME}")
 
         # send email verification
-
+        msg = f"Thank you for registration to the Math Tests Generator portal!!!\n \
+You verification code is: {verification_code}."     
+        
+        send_mail(email, msg)
 
         return {
             'status' : "ok",
