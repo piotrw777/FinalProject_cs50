@@ -21,6 +21,19 @@ def login_required(f):
     return decorated_function
 
 
+def csrf_authentication(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        print(f"got the token: {kwargs.get('csrf_token')}")
+        if (session.get('csrf_token') != kwargs.get('csrf_token')):
+            return {
+                'status' : "error",
+                 'response' : "Dupa jesteś, nie haker!"
+            }
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 def get_latex_errors(filename):
     errors = ""
     pattern = "! "

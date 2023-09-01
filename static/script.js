@@ -215,7 +215,8 @@ function sendUserData() {
         'groups' : groups
     };
 
-    fetch(encodeURIComponent(`/process-data/${JSON.stringify(userData)}`), {
+    csrf_token = document.getElementById('code_column').getAttribute('data-csrf-token')
+    fetch(encodeURIComponent(`/process-data/${JSON.stringify(userData)}/${csrf_token}`), {
         headers : {
             'Content-Type' : 'application/json'
         },
@@ -269,7 +270,8 @@ function generate_preview() {
         'groups' : groups
     };
 
-    fetch(encodeURIComponent(`/generate-preview/${JSON.stringify(userData)}`), {
+    csrf_token = document.getElementById('code_column').getAttribute('data-csrf-token')
+    fetch(encodeURIComponent(`/generate-preview/${JSON.stringify(userData)}/${csrf_token}`), {
         headers : {
             'Content-Type' : 'application/json'
         },
@@ -305,7 +307,8 @@ function apply_template() {
     };
 
     //get code from the server
-    fetch(encodeURIComponent(`/get-latex-code/${JSON.stringify(userData)}`), {
+    csrf_token = document.getElementById('code_column').getAttribute('data-csrf-token')
+    fetch(encodeURIComponent(`/get-latex-code/${JSON.stringify(userData)}/${csrf_token}`), {
         headers : {
             'Content-Type' : 'application/json'
         },
@@ -320,7 +323,7 @@ function apply_template() {
             latex_code.innerHTML = obj["response"]
             latex_code.value = obj["response"]
         } else {
-            alert(obj["response"])
+            open_modal('error-modal', obj["response"])
         }
     });
 }

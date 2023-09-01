@@ -1,5 +1,5 @@
 
-from helpers import login_required, get_latex_errors, send_mail, validate_password
+from helpers import login_required, get_latex_errors, send_mail, validate_password, csrf_authentication
 import os, json
 from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, jsonify, escape
 from flask_session import Session
@@ -293,8 +293,9 @@ def generate_pdf():
     return send_from_directory(directory, f"{filename}.pdf")
 
 
-@app.route('/process-data/<path:userInfo>', methods=['POST'])
-def process_data(userInfo):
+@app.route('/process-data/<path:userInfo>/<csrf_token>', methods=['POST'])
+@csrf_authentication
+def process_data(userInfo, csrf_token):
     userInfo = json.loads(userInfo)
     filename = userInfo['filename']
     groups = int(userInfo['groups'])
@@ -369,8 +370,10 @@ def process_data(userInfo):
         }
 
 
-@app.route('/generate-preview/<path:userInfo>', methods=['POST'])
-def generate_preview(userInfo):
+@app.route('/generate-preview/<path:userInfo>/<csrf_token>', methods=['POST'])
+@csrf_authentication
+def generate_preview(userInfo, csrf_token):
+    print(f"Obtained token: {csrf_token}")
     userInfo = json.loads(userInfo)
     groups = int(userInfo['groups'])
     variables = userInfo['vars'].split()
@@ -433,8 +436,9 @@ def generate_preview(userInfo):
         }
 
 
-@app.route('/get-latex-code/<path:userInfo>', methods=['POST'])
-def get_latex_code(userInfo):
+@app.route('/get-latex-code/<path:userInfo>/<csrf_token>', methods=['POST'])
+@csrf_authentication
+def get_latex_code(userInfo, csrf_token):
     userInfo = json.loads(userInfo)
     filename = userInfo['filename']
     code=Tests.query.filter_by(userid=session["user_id"], filename=filename).first().code
@@ -445,7 +449,8 @@ def get_latex_code(userInfo):
      }
 
 
-@app.route("/tests", methods=["GET", "POST"])
+@app.route("/tests")
+@login_required
 def tests():
     """generate tests"""
     tests  = Tests.query.filter_by(userid = session["user_id"]).all()
@@ -455,7 +460,8 @@ def tests():
         tests_pom.append(test.__dict__)
         tests_pom[-1]["date"] = tests_pom[-1]["date"].strftime('%Y-%m-%d %H:%M:%S')
 
-    return render_template("tests.html", tests = tests)
+    csrf_token = session["csrf_token"]
+    return render_template("tests.html", tests = tests, csrf_token=csrf_token)
 
 
 if __name__ == '__main__':
