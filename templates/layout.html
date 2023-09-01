@@ -52,7 +52,7 @@
         
               <div class="collapse navbar-collapse text-right" id="navbarsExample05">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                {% if session["user_id"] %}
+                {% if session["verified"] %}
                 <li class="nav-item">
                   <a class="nav-link">User: <b>{{ session["username"] }}</b></a>
                 </li>
@@ -69,7 +69,10 @@
                     <button type="button" onclick="location.href='/logout'" class="btn btn-primary nav-bar-button">Logout</button>
                   </li>
                 </ul>
-                
+                {% elif session["user_id"] %}
+                <li class="nav-item">
+                  <button type="button" onclick="location.href='/logout'" class="btn btn-primary nav-bar-button">Logout</button>
+                </li>
                 {% else %}
                 <li class="nav-item">
                   <button type="button" onclick="location.href='/login'" class="btn btn-primary nav-bar-button" id="login-nav-bar-button">Login</button>

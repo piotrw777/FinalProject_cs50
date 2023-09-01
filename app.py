@@ -76,8 +76,12 @@ def after_request(response):
 @app.route("/")
 @login_required
 def index():
+    # generate CSRF token
+    if not "csrf_token" in session:
+        print("Generating csrf token")
+        session["csrf_token"] = os.urandom(32).hex()
+
     csrf_token = session.get('csrf_token')
-    print(f"token: {csrf_token}")
 
     # get list of files
     tests  = Tests.query.filter_by(userid = session["user_id"]).all()
@@ -108,21 +112,43 @@ def login():
             flash('Wrong password')
             return render_template("login.html", msg = "error")
 
-        # Remember which user has logged in
         session["user_id"] = user.id
         session["username"] = username
-        
-        # generate CSRF token
-        if not "csrf_token" in session:
-            print("Generating csrf token")
-            session["csrf_token"] = os.urandom(32).hex()
 
-        flash('You are logged in successfully')
-        return redirect("/")
-
-    # User reached route via GET (as by clicking a link or via redirect)
+        # check verification
+        if (user.verified):
+            session["verified"] = True
+            flash('You are logged in successfully')
+            return redirect("/")
+        else:
+            return redirect("/verify")
     else:
         return render_template("login.html")
+
+
+@app.route("/verify", methods=["GET", "POST"])
+def verify():
+     if request.method == "POST":
+         verification_code_str =  request.form.get("verification_code")
+
+         if (not verification_code_str.isnumeric()):
+            flash('Invalid verification code')
+            return render_template("verify.html", msg = "error")
+         
+         verification_code = int(verification_code_str)
+         user=User.query.filter_by(id=session["user_id"]).first()
+
+         if (verification_code == user.verification_code):
+             user.verified = True
+             db.session.commit()
+             session["verified"] = True
+             flash('Account verified successfully!')
+             return redirect("/")
+         else:
+             flash('Invalid verification code')
+             return render_template("verify.html", msg = "error")
+     else:
+         return render_template("verify.html")
 
 
 @app.route("/logout")

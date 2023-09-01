@@ -398,7 +398,9 @@ function submitpass() {
         }).then(function (text) {
             const obj = JSON.parse(text)
             if (obj["status"] === "ok") {
-                open_modal("success-register-modal", "User successfully added")
+                let msg = `User successfully added.<br> On email ${document.getElementById("email").value}<br> \
+                we've sent verification code. Check your inbox.`
+                open_modal("success-register-modal", msg)
             } else {
                 open_modal("error-modal", obj["response"]);
             }
