@@ -78,6 +78,7 @@ def after_request(response):
 def index():
     csrf_token = session.get('csrf_token')
     print(f"token: {csrf_token}")
+
     # get list of files
     tests  = Tests.query.filter_by(userid = session["user_id"]).all()
     tests_pom = []
@@ -85,7 +86,7 @@ def index():
     for test in tests:
         tests_pom.append(test.__dict__)
 
-    return render_template("index.html", saved_files=tests_pom)
+    return render_template("index.html", name=session["username"], saved_files=tests_pom)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -110,16 +111,14 @@ def login():
         # Remember which user has logged in
         session["user_id"] = user.id
         session["username"] = username
+        
+        # generate CSRF token
+        if not "csrf_token" in session:
+            print("Generating csrf token")
+            session["csrf_token"] = os.urandom(32).hex()
+
         flash('You are logged in successfully')
-
-        # get list of files
-        tests  = Tests.query.filter_by(userid = session["user_id"]).all()
-        tests_pom = []
-
-        for test in tests:
-            tests_pom.append(test.__dict__)
-
-        return render_template("index.html", name=username, saved_files=tests_pom)
+        return redirect("/")
 
     # User reached route via GET (as by clicking a link or via redirect)
     else:
@@ -209,7 +208,7 @@ You verification code is: {verification_code}."
 
         return {
             'status' : "ok",
-            'response' : "Knastera"
+            'response' : ""
         }
     
 
@@ -449,7 +448,6 @@ def get_latex_code(userInfo):
 @app.route("/tests", methods=["GET", "POST"])
 def tests():
     """generate tests"""
-
     tests  = Tests.query.filter_by(userid = session["user_id"]).all()
     tests_pom = []
 
