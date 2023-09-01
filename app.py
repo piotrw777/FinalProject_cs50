@@ -86,7 +86,7 @@ def index():
     for test in tests:
         tests_pom.append(test.__dict__)
 
-    return render_template("index.html", name=session["username"], saved_files=tests_pom)
+    return render_template("index.html", name=session["username"], saved_files=tests_pom, csrf_token=csrf_token)
 
 
 @app.route("/login", methods=["GET", "POST"])
