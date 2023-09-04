@@ -1,4 +1,3 @@
-
 from helpers import login_required, get_latex_errors, send_mail, validate_password, csrf_authentication
 import os, json
 from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, jsonify, escape
@@ -13,7 +12,7 @@ from datetime import datetime
 from py_expression_eval import Parser
 
 #from itsdangerous import URLSafeTimedSerializer
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 #from sqlalchemy import event
 #from sqlalchemy.sql import text
 #import string
@@ -23,12 +22,13 @@ from py_expression_eval import Parser
 USER_FILES_DIR="user_files"
 PREVIEW_DIRNAME="preview"
 PREVIEW_FILENAME="preview_file"
+LOGFILE="logfile.txt"
 
 os.makedirs(USER_FILES_DIR, exist_ok=True) 
 
 parser = Parser()
 
-# load_dotenv()
+load_dotenv()
 
 app = Flask(__name__)
 # Ensure templates are auto-reloaded
@@ -62,6 +62,15 @@ class Tests(db.Model):
     filename = db.Column(db.String(256), nullable=False)
     code = db.Column(db.String(4096), nullable=False)
     date = db.Column(db.DateTime)
+
+
+def log(text):
+    try:
+        with open(LOGFILE, 'a') as file:
+            file.write(f'User: {session["username"]} {datetime.now()} ### ')
+            file.write(text + ' ###' + '\n')
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 @app.after_request
@@ -129,26 +138,32 @@ def login():
 @app.route("/verify", methods=["GET", "POST"])
 def verify():
      if request.method == "POST":
-         verification_code_str =  request.form.get("verification_code")
-
-         if (not verification_code_str.isnumeric()):
+        log('verify function POST')
+        verification_code_str =  request.form.get("verification_code")
+        log(f'verification code: {verification_code_str}')
+        
+        if (not verification_code_str.isnumeric()):
             flash('Invalid verification code')
+            log(f'verification code is not numeric')
             return render_template("verify.html", msg = "error")
          
-         verification_code = int(verification_code_str)
-         user=User.query.filter_by(id=session["user_id"]).first()
-
-         if (verification_code == user.verification_code):
-             user.verified = True
-             db.session.commit()
-             session["verified"] = True
-             flash('Account verified successfully!')
-             return redirect("/")
-         else:
-             flash('Invalid verification code')
-             return render_template("verify.html", msg = "error")
+        verification_code = int(verification_code_str)
+        user=User.query.filter_by(id=session["user_id"]).first()
+        log(f'database querry')
+        if (verification_code == user.verification_code):
+            user.verified = True
+            db.session.commit()
+            session["verified"] = True
+            flash('Account verified successfully!')
+            log(f'Verification successful')
+            return redirect("/")
+        else:
+            flash('Invalid verification code')
+            log(f'invalid verification code')
+            return render_template("verify.html", msg = "error")
      else:
-         return render_template("verify.html")
+        log('verify function GET')
+        return render_template("verify.html")
 
 
 @app.route("/logout")
