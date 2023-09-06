@@ -7,3 +7,6 @@ rubbish
 *.db
 user_files
 myenv
+tmp
+setup_global_web_server
+logfile.txt
