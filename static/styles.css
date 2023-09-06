@@ -67,7 +67,7 @@ button[type="submit"]:hover {
   cursor: pointer;
 }
   
-#question {
+.question {
   text-align: center;
   opacity: 1;
   font: black;
