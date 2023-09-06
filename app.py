@@ -10,7 +10,7 @@ from pylatex.utils import NoEscape
 import re
 from datetime import datetime
 from py_expression_eval import Parser
-
+import logging
 #from itsdangerous import URLSafeTimedSerializer
 from dotenv import load_dotenv
 #from sqlalchemy import event
@@ -31,6 +31,10 @@ parser = Parser()
 load_dotenv()
 
 app = Flask(__name__)
+
+# set log level
+app.logger.setLevel(logging.DEBUG)
+
 # Ensure templates are auto-reloaded
 app.config["TEMPLATES_AUTO_RELOAD"] = True
 
