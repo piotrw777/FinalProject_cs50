@@ -166,6 +166,16 @@ def verify():
         return render_template("verify.html")
 
 
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+     if request.method == "POST":
+         print('hi')
+         flash('Check your email  ośle', 'success')
+         return render_template("login.html", msg = "success")
+     else:
+        return render_template("forgot-password.html")
+
+
 @app.route("/logout")
 def logout():
     """Log user out"""
