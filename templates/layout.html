@@ -23,23 +23,6 @@
     </head>
 
     <body>  
-        {% if get_flashed_messages() %}
-            <header>
-                {% if msg == "error" %}
-                    <div class="alert alert-danger mb-0 text-center" role="alert">
-                {% elif msg == "success" %}
-                    <div class="alert alert-info mb-0 text-center" role="alert">
-                {% else %}
-                    <div class="alert alert-success mb-0 text-center" role="alert">
-                {% endif %}
-                    <strong>{{ get_flashed_messages() | join(" ") }}</strong>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            </header>
-        {% endif %}
-
           <nav class="navbar navbar-expand-md navbar-light bg-light" aria-label="Fifth navbar example">
             <div class="container-fluid">
               <a class="navbar-brand" href="#">
@@ -82,14 +65,24 @@
               </div>
             </div>
           </nav>
-
+          {% if get_flashed_messages() %}
+          <header>
+              {% if msg == "error" %}
+                  <div class="alert alert-danger mb-0 text-center" role="alert">
+              {% elif msg == "success" %}
+                  <div class="alert alert-info mb-0 text-center" role="alert">
+              {% else %}
+                  <div class="alert alert-success mb-0 text-center" role="alert">
+              {% endif %}
+                  <strong>{{ get_flashed_messages() | join(" ") }}</strong>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+              </div>
+          </header>
+      {% endif %}
         <main class="container-fluid mt-5">
             {% block main %}{% endblock %}
         </main>
-
-        <footer class="mb-5 small text-center text-muted">
-          Written by Piotr Wasilewski <br>
-          Version 1
-      </footer>
     </body>
 </html>

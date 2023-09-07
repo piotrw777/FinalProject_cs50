@@ -174,7 +174,7 @@ def verify():
 def forgot_password():
      if request.method == "POST":
          print('hi')
-         flash('Check your email  ośle', 'success')
+         flash('Check your email', 'success')
          return render_template("login.html", msg = "success")
      else:
         return render_template("forgot-password.html")
@@ -513,7 +513,7 @@ def tests():
 
     for test in tests:
         tests_pom.append(test.__dict__)
-        tests_pom[-1]["date"] = tests_pom[-1]["date"].strftime('%Y-%m-%d %H:%M:%S')
+        tests_pom[-1]["date"] = tests_pom[-1]["date"].strftime('%y-%m-%d %H:%M:%S')
 
     csrf_token = session["csrf_token"]
     return render_template("tests.html", tests = tests, csrf_token=csrf_token)

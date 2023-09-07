@@ -3,7 +3,6 @@ body {
   background-size: auto;
   background-position: center;
   height: 100vh;
-  min-width: 600px;
 }
   
 .mt-5 {
@@ -295,6 +294,12 @@ button[type="submit"]:hover {
   th.text-end,td.text-end{
     padding-left: 2px;
     padding-right: 2px;
-    color : green;
+  }
+}
+
+@media (max-width: 600px) {
+  .card-body, .card, .mt-5{
+    padding-left: 5px;
+    padding-right: 5px;
   }
 }
