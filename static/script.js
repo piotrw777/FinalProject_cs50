@@ -378,6 +378,7 @@ function submitpass() {
     } else  if (! validate_password(password)) {
         open_modal("error-modal", "Password does not satisfy conditions");
     }  else {
+        open_modal("processing-data-modal", "Please wait...", "Processing data")
         var userData = {
             'username' : document.getElementById("username").value,
             'email' : document.getElementById("email").value,
@@ -398,10 +399,12 @@ function submitpass() {
         }).then(function (text) {
             const obj = JSON.parse(text)
             if (obj["status"] === "ok") {
+                closeModal("processing-data-modal")
                 let msg = `User successfully added.<br> On email ${document.getElementById("email").value}<br> \
                 we've sent verification code. Check your inbox.`
                 open_modal("success-register-modal", msg)
             } else {
+                closeModal("processing-data-modal")
                 open_modal("error-modal", obj["response"]);
             }
         });
