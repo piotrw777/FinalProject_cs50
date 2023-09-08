@@ -1,6 +1,8 @@
 # FinalProject_cs50
 Final Project for CS50 2023 course
 
+![screenshot](example.png)
+
 ## Setup local server (Ubuntu 18.04, Ubuntu 20.04, Ubuntu 22.04)
 ```
 ./setup_server.sh
