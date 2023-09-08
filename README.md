@@ -26,14 +26,18 @@ Or use the script that will do this automatically:
 ```
 
 ## Deployment
-[https://mathtestsgenerator/piotrw777.com](https://mathtestsgenerator.piotrw777.com)
+[https://mathtestsgenerator.piotrw777.com](https://mathtestsgenerator.piotrw777.com)
 
 ## Bibliography
 
 https://www.w3schools.com/js
+
 https://bobbyhadz.com/blog/javascript-get-difference-between-two-sets
+
 https://www.codespeedy.com/how-to-pass-javascript-variables-to-python-in-flask/
+
 https://rahulbaran.hashnode.dev/how-to-send-json-from-javascript-to-flask-using-fetch-api
+
 https://jeltef.github.io/PyLaTeX/current/
 
 CS50 Web development course
