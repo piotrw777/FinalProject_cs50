@@ -1,7 +1,34 @@
 # FinalProject_cs50
 Final Project for CS50 2023 course
 
-Bibliography
+## Setup local server (Ubuntu 18.04, Ubuntu 20.04, Ubuntu 22.04)
+````
+./setup_server.sh
+```
+This will install all necessary packages needed for server to run.
+
+## Run Flask server:
+Firstly, create database by running:
+```
+python3
+from app import app
+from app import db
+db.create_all()
+```
+Then execute those commands:
+```
+source ./myenv/bin/activate
+flask run
+```
+Or use the script that will do this automatically:
+```
+./start_server.txt
+```
+
+## Deployment
+[https://mathtestsgenerator/piotrw777.com](https://mathtestsgenerator/piotrw777.com)
+
+## Bibliography
 
 https://www.w3schools.com/js
 https://bobbyhadz.com/blog/javascript-get-difference-between-two-sets
@@ -26,25 +53,3 @@ https://wpspeedmatters.com/speed-up-background-images/
 
 itsdangerous library
 https://itsdangerous.palletsprojects.com/en/2.1.x/
-
-SETUP SERVER
-Run the script setup_server.sh
-This will install all necessary packages needed for server to run.
-
-To run the Flask server:
-Firstly, create database by running:
-
-python3
-from app import app
-from app import db
-db.create_all()
-
-Then execute those commands:
-source ./myenv/bin/activate
-flask run
-
-Or use the script that will do this automatically:
-
-./start_server.txt
-
-public ip: 54.162.243.124
