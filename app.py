@@ -1,4 +1,4 @@
-from helpers import login_required, get_latex_errors, send_mail, validate_password, csrf_authentication
+from helpers import login_required, get_latex_errors, send_mail, validate_password, csrf_authentication, apology
 import os, json
 from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, jsonify, escape
 from flask_session import Session
@@ -11,7 +11,7 @@ import re
 from datetime import datetime
 from py_expression_eval import Parser
 import logging
-#from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer as Serializer, BadData
 from dotenv import load_dotenv
 #from sqlalchemy import event
 #from sqlalchemy.sql import text
@@ -46,6 +46,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = 'your_secret_key'
+
+serializer=Serializer(app.config['SECRET_KEY'])
 
 Session(app)
 
@@ -144,16 +146,13 @@ def verify():
      if request.method == "POST":
         log('verify function POST')
         verification_code_str =  request.form.get("verification_code")
-        log(f'verification code: {verification_code_str}')
         
         if (not verification_code_str.isnumeric()):
             flash('Invalid verification code')
-            log(f'verification code is not numeric')
             return render_template("verify.html", msg = "error")
          
         verification_code = int(verification_code_str)
         user=User.query.filter_by(id=session["user_id"]).first()
-        log(f'database querry')
         if (verification_code == user.verification_code):
             user.verified = True
             db.session.commit()
@@ -163,17 +162,72 @@ def verify():
             return redirect("/")
         else:
             flash('Invalid verification code')
-            log(f'invalid verification code')
             return render_template("verify.html", msg = "error")
      else:
         log('verify function GET')
         return render_template("verify.html")
 
 
+@app.route("/change-password/<token>", methods=["POST"])
+def change_password(token):
+    try:
+        userid = serializer.loads(token, salt='forgot-password', max_age=120)
+    except BadData as e:
+        return apology(msgtop="hmm", msgbottom="looks suspicious")
+
+    password=request.form.get("newpassword")
+    confirmation=request.form.get("newpassword-confirmation")
+    
+    if (password != confirmation):
+        flash('Passwords don\'t match')
+        return render_template("change-password.html", token=token, msg="error")
+    
+    if (validate_password(password) < 0):
+        flash('Password too weak')
+        return render_template("change-password.html", token=token, msg="error")
+    
+    # change password in the database
+    user=User.query.filter_by(id=userid).first()
+    user.password = generate_password_hash(password)
+    db.session.commit()
+
+    # SUCCESS!!!
+    flash('Password changed successfully')
+    return render_template("login.html", msg = "Success")
+    
+
+@app.route("/forgot-password/<token>", methods=["GET"])
+def forgot_password_verify(token):
+    try:
+        userid = serializer.loads(token, salt='forgot-password', max_age=120)
+    except BadData as e:
+        return apology(msgtop="i was here first", msgbottom="You are too late")
+    return render_template("change-password.html", token=token)
+
+    
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
      if request.method == "POST":
-         print('hi')
+         email = request.form.get("email-password-recovery").lower()
+         user=User.query.filter_by(email=email).first()
+
+         if (user == None):
+            flash('User with given email does not exist')
+            return render_template("forgot-password.html", msg = "error")
+         
+         if (user.verified == False):
+             return apology(msgtop="Don't be so quick", msgbottom="Verify first")
+
+         # generate link with user id
+         # domain_tmp="http://127.0.0.1:5000"
+         domain="https://mathtestsgenerator.piotrw777.com"
+         token=serializer.dumps(user.id, salt='forgot-password')
+         reset_link=f"{domain}/forgot-password/{token}"
+
+         # send link on given email
+         msg=f"Your link for resetting password is here ziomal!!!: \n{reset_link}\nThe link is valid for 2 minutes."
+         send_mail(email, msg, topic="Reset password")
+
          flash('Check your email', 'success')
          return render_template("login.html", msg = "success")
      else:
@@ -204,7 +258,7 @@ def register_user(userInfo):
         userInfo = json.loads(userInfo)
 
         name = userInfo['username']
-        email = userInfo['email']
+        email = userInfo['email'].lower()
         password = userInfo['password']
         confirmation = userInfo['confirmation']
 
@@ -279,7 +333,7 @@ def download_pdf():
         
     except Exception as e:
         # There was an error sending the PDF file, so redirect the user to the error page
-        return redirect('/error')
+        return apology("Error sending a file")
 
 
 @app.route('/get-tex-file')
@@ -295,7 +349,7 @@ def get_tex_file():
         
     except Exception as e:
         # There was an error sending the PDF file, so redirect the user to the error page
-        return redirect('/error')
+        return apology("Error sending a file")
 
 
 @app.route('/get-tex-code')
@@ -484,7 +538,6 @@ def generate_preview(userInfo, csrf_token):
     except Exception as e:
         errors = get_latex_errors(f'{preview_dir}/preview.log')
         print(errors)
-        #os.remove(f'{USER_FILES_DIR}/{session["username"]}/{filename}.pdf')
         return {
             'status' : "error",
             'response' : errors

@@ -12,3 +12,4 @@ pip install Flask-SQLAlchemy
 pip install pylatex
 pip install python-dotenv
 pip install py_expression_eval
+pip install itsdangerous

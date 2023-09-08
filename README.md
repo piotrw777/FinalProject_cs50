@@ -24,6 +24,9 @@ https://github.com/Ara225/mini-frontend-projects/blob/master/2-bootstrap-modal-w
 Speed up loading background image
 https://wpspeedmatters.com/speed-up-background-images/
 
+itsdangerous library
+https://itsdangerous.palletsprojects.com/en/2.1.x/
+
 SETUP SERVER
 Run the script setup_server.sh
 This will install all necessary packages needed for server to run.

@@ -96,7 +96,7 @@ def validate_password(password):
     return 0
 
 
-def send_mail(recipient, msg):
+def send_mail(recipient, msg, topic="Registration"):
 
     # Define to/from
     sender = ''
@@ -104,7 +104,7 @@ def send_mail(recipient, msg):
 
     # Create message
     msg = MIMEText(msg, 'plain', 'utf-8')
-    msg['Subject'] =  Header("Registration", 'utf-8')
+    msg['Subject'] =  Header(topic, 'utf-8')
     msg['From'] = formataddr((str(Header(sender_title, 'utf-8')), sender))
     msg['To'] = recipient
 
@@ -117,3 +117,18 @@ def send_mail(recipient, msg):
     server.login(sender, '')
     server.sendmail(sender, [recipient], msg.as_string())
     server.quit()
+
+
+def apology(msgtop="hmm", msgbottom="error"):
+    """Render message as an error to user."""
+    def escape(s):
+        """
+        Escape special characters.
+
+        https://github.com/jacebrowning/memegen#special-characters
+        """
+        for old, new in [("-", "--"), (" ", "-"), ("_", "__"), ("?", "~q"),
+                         ("%", "~p"), ("#", "~h"), ("/", "~s"), ("\"", "''")]:
+            s = s.replace(old, new)
+        return s
+    return render_template("apology.html", msgtop=msgtop,msgbottom=escape(msgbottom))
