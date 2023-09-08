@@ -26,7 +26,7 @@ Or use the script that will do this automatically:
 ```
 
 ## Deployment
-[https://mathtestsgenerator/piotrw777.com](https://mathtestsgenerator/piotrw777.com)
+[https://mathtestsgenerator/piotrw777.com](https://mathtestsgenerator.piotrw777.com)
 
 ## Bibliography
 
