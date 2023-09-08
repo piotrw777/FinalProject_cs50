@@ -322,6 +322,7 @@ function apply_template() {
         if (obj["status"] === "ok") {
             latex_code.innerHTML = obj["response"]
             latex_code.value = obj["response"]
+            update_variables_forms()
         } else {
             open_modal('error-modal', obj["response"])
         }

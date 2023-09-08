@@ -73,8 +73,12 @@ class Tests(db.Model):
 def log(text):
     try:
         with open(LOGFILE, 'a') as file:
-            file.write(f'User: {session["username"]} {datetime.now()} ### ')
-            file.write(text + ' ###' + '\n')
+            if (session.get("username") is not None):
+                file.write(f'User: {session["username"]} {datetime.now()} ### ')
+                file.write(text + ' ###' + '\n')
+            else:
+                file.write(f'User: Unknown {datetime.now()} ### ')
+                file.write(text + ' ###' + '\n')
     except Exception as e:
         print(f"An error occurred: {e}")
 
@@ -225,10 +229,10 @@ def forgot_password():
          reset_link=f"{domain}/forgot-password/{token}"
 
          # send link on given email
-         msg=f"Your link for resetting password is here ziomal!!!: \n{reset_link}\nThe link is valid for 2 minutes."
+         msg=f"Your link for resetting password is down below: \n{reset_link}\nThe link is valid for 2 minutes."
          send_mail(email, msg, topic="Reset password")
 
-         flash('Check your email', 'success')
+         flash('Reset password link sent. Check your email', 'success')
          return render_template("login.html", msg = "success")
      else:
         return render_template("forgot-password.html")
