@@ -1,5 +1,5 @@
 import os, json, re, random
-from helpers import login_required, get_latex_errors, validate_password, csrf_authentication, apology, log, send_mail
+from helpers import login_required, get_latex_errors, validate_password, csrf_authentication, apology, log, send_mail, validate_username
 from config import USER_FILES_DIR, PREVIEW_DIRNAME, app, db, parser, serializer, User, Tests
 from flask import flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, escape
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -198,6 +198,12 @@ def register_user(userInfo):
                 'response' : "Empty username"
             }
         
+        if (not validate_username(name)):
+            return {
+                'status' : "error",
+                'response' : "Invalid username"
+            }
+
         if (email == ""):
             return {
                 'status' : "error",

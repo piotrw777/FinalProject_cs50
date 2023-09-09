@@ -96,6 +96,15 @@ def validate_password(password):
     return 0
 
 
+def validate_username(username):
+    regex = r'^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,31}$'
+
+    if re.match(regex, username):
+        return True
+    else:
+        return False
+
+
 def apology(msgtop="hmm", msgbottom="error"):
     """Render message as an error to user."""
     def escape(s):

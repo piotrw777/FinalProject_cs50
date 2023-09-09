@@ -420,6 +420,12 @@ function validate_username() {
         return  "Empty username"
     } else if  (username.match(/[\s]/g)) {
         return "Username cannot contain white characters"
+    } else if (username.match(/^[_\.\-].*$/g)) {
+        return "Username must begin with alphanumeric symbol"
+    } else if (! username.match(/^[a-zA-Z0-9][a-zA-Z0-9_\-\.]*$/g)) {
+        return "Username contains invalid characters\nOnly letters, digits and '-', '_', '.' are allowed."
+    } else if (! username.match(/^[a-zA-Z0-9][a-zA-Z0-9_\-\.]{0,31}$/g)) {
+        return "Username exceeds 32 characters"
     } else {
         return true;
     }
