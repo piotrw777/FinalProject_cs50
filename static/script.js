@@ -230,7 +230,7 @@ function sendUserData() {
         if (obj["status"] === "ok") {
             window.location.assign('/download-pdf?filename=' + filename)
         } else {
-            let error_msg = obj["response"].replace('\n','<br>')
+            let error_msg = obj["response"].replace(/\n/g,'<br>')
             open_modal('error-modal', error_msg)
         }
     });
@@ -286,7 +286,7 @@ function generate_preview() {
             preview = document.getElementById('preview')
             preview.setAttribute("src", `/generate_pdf?filename=preview/preview`)
         } else {
-            let error_msg = obj["response"].replace('\n','<br>')
+            let error_msg = obj["response"].replace(/\n/g,'<br>')
             open_modal('error-modal', error_msg)
         }
     });

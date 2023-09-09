@@ -12,6 +12,7 @@ PREVIEW_FILENAME="preview_file"
 LOGFILE="logfile.txt"
 
 app = Flask(__name__)
+load_dotenv()
 
 # Make sure necessary ENVS are set
 if not os.environ.get("SECRET_KEY"):
@@ -56,7 +57,7 @@ Session(app)
 app.app_context().push()
 db = SQLAlchemy(app)
 parser = Parser()
-load_dotenv()
+
 os.makedirs(USER_FILES_DIR, exist_ok=True)
 
 class User(db.Model):
