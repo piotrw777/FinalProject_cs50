@@ -1,6 +1,11 @@
+import re, smtplib
 from functools import wraps
 from flask import redirect, render_template, session
-import re
+from config import app, LOGFILE
+from email.mime.text import MIMEText
+from email.header import Header
+from email.utils import formataddr
+from datetime import datetime
 
 
 def login_required(f):
@@ -104,3 +109,34 @@ def apology(msgtop="hmm", msgbottom="error"):
             s = s.replace(old, new)
         return s
     return render_template("apology.html", msgtop=msgtop,msgbottom=escape(msgbottom))
+
+def log(text):
+    try:
+        with open(LOGFILE, 'a') as file:
+            if (session.get("username") is not None):
+                file.write(f'User: {session["username"]} {datetime.now()} ### ')
+                file.write(text + ' ###' + '\n')
+            else:
+                file.write(f'User: Unknown {datetime.now()} ### ')
+                file.write(text + ' ###' + '\n')
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+def send_mail(recipient, msg, topic="Registration"):
+    # Define to/from
+    sender = app.config["SMTP_LOGIN"]
+    sender_title = "Math Tests Generator"
+
+    # Create message
+    msg = MIMEText(msg, 'plain', 'utf-8')
+    msg['Subject'] =  Header(topic, 'utf-8')
+    msg['From'] = formataddr((str(Header(sender_title, 'utf-8')), sender))
+    msg['To'] = recipient
+
+    server = smtplib.SMTP_SSL(app.config["SMTP_SERVER"], app.config["SMTP_SERVER_PORT"])
+
+    # Perform operations via server
+    server.login(sender, app.config["SMTP_PASSWORD"])
+    server.sendmail(sender, [recipient], msg.as_string())
+    server.quit()

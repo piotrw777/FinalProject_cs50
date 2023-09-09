@@ -1,123 +1,12 @@
-from helpers import login_required, get_latex_errors, validate_password, csrf_authentication, apology
-import os, json
-from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, jsonify, escape
-from flask_session import Session
-from flask_sqlalchemy import SQLAlchemy
+import os, json, re, random
+from helpers import login_required, get_latex_errors, validate_password, csrf_authentication, apology, log, send_mail
+from config import USER_FILES_DIR, PREVIEW_DIRNAME, app, db, serializer, User, Tests
+from flask import flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, escape
 from werkzeug.security import check_password_hash, generate_password_hash
-import random
 from pylatex import Document, Package, Command
 from pylatex.utils import NoEscape
-import re
 from datetime import datetime
-from py_expression_eval import Parser
-import logging
-from itsdangerous import URLSafeTimedSerializer as Serializer, BadData
-from dotenv import load_dotenv
-import smtplib
-from email.mime.text import MIMEText
-from email.header import Header
-from email.utils import formataddr
-
-# config:
-USER_FILES_DIR="user_files"
-PREVIEW_DIRNAME="preview"
-PREVIEW_FILENAME="preview_file"
-LOGFILE="logfile.txt"
-
-os.makedirs(USER_FILES_DIR, exist_ok=True) 
-
-parser = Parser()
-
-load_dotenv()
-
-app = Flask(__name__)
-
-# Make sure necessary ENVS are set
-if not os.environ.get("SECRET_KEY"):
-    raise RuntimeError("SECRET_KEY not set")
-
-if not os.environ.get("SMPT_SERVER"):
-    raise RuntimeError("SMPT_SERVER not set")
-
-if not os.environ.get("SMPT_SERVER_PORT"):
-    raise RuntimeError("SMPT_SERVER_PORT not set")
-
-if not os.environ.get("SMPT_LOGIN"):
-    raise RuntimeError("SMPT_LOGIN not set")
-
-app.config["SMPT_SERVER"] = os.environ.get("SMPT_SERVER")
-app.config["SMPT_SERVER_PORT"] = os.environ.get("SMPT_SERVER_PORT")
-app.config["SMTP_PASSWORD"] = os.environ.get("SMTP_PASSWORD")
-app.config["SMPT_LOGIN"] = os.environ.get("SMPT_LOGIN")
-
-# set log level
-app.logger.setLevel(logging.DEBUG)
-
-# Ensure templates are auto-reloaded
-app.config["TEMPLATES_AUTO_RELOAD"] = True
-
-# Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-#app.config['SQLALCHEMY_ECHO'] = True
-app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
-
-serializer=Serializer(app.config['SECRET_KEY'])
-
-Session(app)
-
-db = SQLAlchemy(app)
-app.app_context().push()
-
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20), unique=True, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(120), unique=False, nullable=False)
-    verification_code = db.Column(db.Integer, unique=False, nullable=False)
-    verified = db.Column(db.Boolean, unique=False, nullable=False)
-
-class Tests(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    userid = db.Column(db.String(20), nullable=False)
-    filename = db.Column(db.String(256), nullable=False)
-    code = db.Column(db.String(4096), nullable=False)
-    date = db.Column(db.DateTime)
-
-
-def log(text):
-    try:
-        with open(LOGFILE, 'a') as file:
-            if (session.get("username") is not None):
-                file.write(f'User: {session["username"]} {datetime.now()} ### ')
-                file.write(text + ' ###' + '\n')
-            else:
-                file.write(f'User: Unknown {datetime.now()} ### ')
-                file.write(text + ' ###' + '\n')
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-
-def send_mail(recipient, msg, topic="Registration"):
-    # Define to/from
-    sender = app.config["SMPT_LOGIN"]
-    sender_title = "Math Tests Generator"
-
-    # Create message
-    msg = MIMEText(msg, 'plain', 'utf-8')
-    msg['Subject'] =  Header(topic, 'utf-8')
-    msg['From'] = formataddr((str(Header(sender_title, 'utf-8')), sender))
-    msg['To'] = recipient
-
-    server = smtplib.SMTP_SSL(app.config["SMPT_SERVER"], app.config["SMPT_SERVER_PORT"])
-
-    # Perform operations via server
-    server.login(sender, app.config["SMTP_PASSWORD"])
-    server.sendmail(sender, [recipient], msg.as_string())
-    server.quit()
+from itsdangerous import BadData
 
 
 @app.after_request
