@@ -13,12 +13,8 @@ from py_expression_eval import Parser
 import logging
 from itsdangerous import URLSafeTimedSerializer as Serializer, BadData
 from dotenv import load_dotenv
-#from sqlalchemy import event
-#from sqlalchemy.sql import text
-#import string
 
-#from pylatex.document import Document
-
+# config:
 USER_FILES_DIR="user_files"
 PREVIEW_DIRNAME="preview"
 PREVIEW_FILENAME="preview_file"
@@ -31,6 +27,24 @@ parser = Parser()
 load_dotenv()
 
 app = Flask(__name__)
+
+# Make sure necessary ENVS are set
+if not os.environ.get("SECRET_KEY"):
+    raise RuntimeError("SECRET_KEY not set")
+
+if not os.environ.get("SMPT_SERVER"):
+    raise RuntimeError("SMPT_SERVER not set")
+
+if not os.environ.get("SMPT_SERVER_PORT"):
+    raise RuntimeError("SMPT_SERVER_PORT not set")
+
+if not os.environ.get("SMPT_LOGIN"):
+    raise RuntimeError("SMPT_LOGIN not set")
+
+app.config["SMPT_SERVER"] = os.environ.get("SMPT_SERVER")
+app.config["SMPT_SERVER_PORT"] = os.environ.get("SMPT_SERVER_PORT")
+app.config["SMTP_PASSWORD"] = os.environ.get("SMTP_PASSWORD")
+app.config["SMPT_LOGIN"] = os.environ.get("SMPT_LOGIN")
 
 # set log level
 app.logger.setLevel(logging.DEBUG)
@@ -45,7 +59,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 #app.config['SQLALCHEMY_ECHO'] = True
-app.config['SECRET_KEY'] = 'your_secret_key'
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
 
 serializer=Serializer(app.config['SECRET_KEY'])
 
