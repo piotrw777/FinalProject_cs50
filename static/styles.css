@@ -290,7 +290,7 @@ button[type="submit"]:hover {
   padding-right: 0px;
 }
 
-#get-tex-file-modal-message {
+#get-tex-file-modal-message, #error-modal-message{
   white-space: pre-line;
 }
 

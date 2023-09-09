@@ -140,3 +140,5 @@ def send_mail(recipient, msg, topic="Registration"):
     server.login(sender, app.config["SMTP_PASSWORD"])
     server.sendmail(sender, [recipient], msg.as_string())
     server.quit()
+
+    
