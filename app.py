@@ -1,4 +1,4 @@
-from helpers import login_required, get_latex_errors, send_mail, validate_password, csrf_authentication, apology
+from helpers import login_required, get_latex_errors, validate_password, csrf_authentication, apology
 import os, json
 from flask import Flask, flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, jsonify, escape
 from flask_session import Session
@@ -13,6 +13,10 @@ from py_expression_eval import Parser
 import logging
 from itsdangerous import URLSafeTimedSerializer as Serializer, BadData
 from dotenv import load_dotenv
+import smtplib
+from email.mime.text import MIMEText
+from email.header import Header
+from email.utils import formataddr
 
 # config:
 USER_FILES_DIR="user_files"
@@ -95,6 +99,25 @@ def log(text):
                 file.write(text + ' ###' + '\n')
     except Exception as e:
         print(f"An error occurred: {e}")
+
+
+def send_mail(recipient, msg, topic="Registration"):
+    # Define to/from
+    sender = app.config["SMPT_LOGIN"]
+    sender_title = "Math Tests Generator"
+
+    # Create message
+    msg = MIMEText(msg, 'plain', 'utf-8')
+    msg['Subject'] =  Header(topic, 'utf-8')
+    msg['From'] = formataddr((str(Header(sender_title, 'utf-8')), sender))
+    msg['To'] = recipient
+
+    server = smtplib.SMTP_SSL(app.config["SMPT_SERVER"], app.config["SMPT_SERVER_PORT"])
+
+    # Perform operations via server
+    server.login(sender, app.config["SMTP_PASSWORD"])
+    server.sendmail(sender, [recipient], msg.as_string())
+    server.quit()
 
 
 @app.after_request

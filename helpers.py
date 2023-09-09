@@ -1,11 +1,6 @@
-import requests
 from functools import wraps
-from flask import redirect, render_template, request, session
+from flask import redirect, render_template, session
 import re
-import smtplib
-from email.mime.text import MIMEText
-from email.header import Header
-from email.utils import formataddr
 
 
 def login_required(f):
@@ -94,29 +89,6 @@ def validate_password(password):
     if not has_special_symbol(password):
         return -5
     return 0
-
-
-def send_mail(recipient, msg, topic="Registration"):
-
-    # Define to/from
-    sender = ''
-    sender_title = "Math Tests Generator"
-
-    # Create message
-    msg = MIMEText(msg, 'plain', 'utf-8')
-    msg['Subject'] =  Header(topic, 'utf-8')
-    msg['From'] = formataddr((str(Header(sender_title, 'utf-8')), sender))
-    msg['To'] = recipient
-
-    # Create server object with SSL option
-    # Change below com, corresponds to your location in the world. 
-    # For instance  if you are in Europe or in if you are in India.
-    server = smtplib.SMTP_SSL('', )
-
-    # Perform operations via server
-    server.login(sender, '')
-    server.sendmail(sender, [recipient], msg.as_string())
-    server.quit()
 
 
 def apology(msgtop="hmm", msgbottom="error"):
