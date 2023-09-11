@@ -190,8 +190,8 @@ def forgot_password():
              return apology(msgtop="Don't be so quick", msgbottom="Verify first")
 
          # generate link with user id
-         domain="http://127.0.0.1:5000"
-         # domain="https://mathtestsgenerator.piotrw777.com"
+         #domain="http://127.0.0.1:5000"
+         domain="https://mathtestsgenerator.piotrw777.com"
          token=serializer.dumps(user.id, salt='forgot-password')
          reset_link=f"{domain}/forgot-password/{token}"
 
