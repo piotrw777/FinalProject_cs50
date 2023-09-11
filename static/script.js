@@ -157,7 +157,7 @@ function validate_min_max(variable) {
     }
 
     if (ret_val == true && (Number(max_val) < Number(min_val))) {
-        error_box_max.innerHTML = "Maximum value less than minmum value";
+        error_box_max.innerHTML = "Max value less than min value";
         ret_val = false;
     }
 
