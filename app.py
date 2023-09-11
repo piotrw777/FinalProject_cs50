@@ -98,46 +98,87 @@ def verify():
         return render_template("verify.html")
 
 
-@app.route("/change-password/<token>", methods=["POST"])
-def change_password(token):
+@app.route("/change-password/<token>/<reset_password_random_token>", methods=["POST"])
+def change_password(token, reset_password_random_token):
     try:
         userid = serializer.loads(token, salt='forgot-password', max_age=120)
     except BadData as e:
         return apology(msgtop="hmm", msgbottom="looks suspicious")
+
+    # check if page is accessed from the same session
+    if (session.get("reset_password_random_token") is None):
+        return apology(msgtop="Hey", msgbottom="Don't approach me777")
 
     password=request.form.get("newpassword")
     confirmation=request.form.get("newpassword-confirmation")
     
     if (password != confirmation):
         flash('Passwords don\'t match')
-        return render_template("change-password.html", token=token, msg="error")
+        return render_template("change-password.html", token=token,  
+        reset_password_random_token=session["reset_password_random_token"], 
+        msg="error")
     
     if (validate_password(password) < 0):
         flash('Password too weak')
-        return render_template("change-password.html", token=token, msg="error")
-    
-    # change password in the database
-    user=User.query.filter_by(id=userid).first()
-    user.password = generate_password_hash(password)
-    db.session.commit()
+        return render_template("change-password.html", token=token,  
+        reset_password_random_token=session["reset_password_random_token"], 
+        msg="error")
 
-    # SUCCESS!!!
-    flash('Password changed successfully')
-    return render_template("login.html", msg = "Success")
+    user=User.query.filter_by(id=userid).first()
+
+    if ((user.active_reset_password_link == False) and \
+        (user.reset_password_token == token) and \
+        (user.reset_password_random_token) == reset_password_random_token) and \
+        (user.reset_password_random_token == session["reset_password_random_token"]):
+        
+        try:
+            userid = serializer.loads(token, salt='forgot-password', max_age=180)
+        except BadData as e:
+            return apology(msgtop="", msgbottom="You were too slow")
+
+        # change password in the database, clear fields
+        user.password = generate_password_hash(password)
+        user.active_reset_password_link = None
+        user.reset_password_token = None
+        user.reset_password_random_token = None
+        db.session.commit()
+        session.clear()
+
+        # SUCCESS!!!
+        flash('Password changed successfully')
+        return render_template("login.html", msg = "Success")
+    else:
+        return apology(msgtop="Hey", msgbottom="Don't approach me??")
     
 
 @app.route("/forgot-password/<token>", methods=["GET"])
-def forgot_password_verify(token):
+def forgot_password_verify(token):  
     try:
         userid = serializer.loads(token, salt='forgot-password', max_age=120)
     except BadData as e:
         return apology(msgtop="i was here first", msgbottom="You are too late")
-    return render_template("change-password.html", token=token)
+
+    # check if page is accessed from the same session
+    if (session.get("reset_password_random_token") is None):
+        return apology(msgtop="Hey", msgbottom="Don't approach me!!!")
+
+    # database check
+    user=User.query.filter_by(id=userid).first()
+
+    if ((user.active_reset_password_link == True) and 
+        (user.reset_password_random_token == session["reset_password_random_token"])):
+
+        user.active_reset_password_link = False  
+        db.session.commit()
+        return render_template("change-password.html", token=token, reset_password_random_token=session["reset_password_random_token"])
+    else:
+        return apology(msgtop="Hey", msgbottom="That was enough")
 
     
 @app.route("/forgot-password", methods=["GET", "POST"])
 def forgot_password():
      if request.method == "POST":
+         session.clear()
          email = request.form.get("email-password-recovery").lower()
          user=User.query.filter_by(email=email).first()
 
@@ -149,14 +190,26 @@ def forgot_password():
              return apology(msgtop="Don't be so quick", msgbottom="Verify first")
 
          # generate link with user id
-         # domain_tmp="http://127.0.0.1:5000"
-         domain="https://mathtestsgenerator.piotrw777.com"
+         domain="http://127.0.0.1:5000"
+         # domain="https://mathtestsgenerator.piotrw777.com"
          token=serializer.dumps(user.id, salt='forgot-password')
          reset_link=f"{domain}/forgot-password/{token}"
 
          # send link on given email
          msg=f"Your link for resetting password is down below: \n{reset_link}\nThe link is valid for 2 minutes."
-         send_mail(email, msg, topic="Reset password")
+
+         try:
+            send_mail(email, msg, topic="Reset password")
+         except Exception as e:
+            return apology(msgtop="Ups", msgbottom="Mail is gone")
+
+         session["reset_password_random_token"] = os.urandom(32).hex()
+         user.active_reset_password_link = True
+         user.reset_password_token = token
+         user.reset_password_random_token = os.urandom(32).hex()
+         db.session.commit()
+
+         session["reset_password_random_token"] = user.reset_password_random_token
 
          flash('Reset password link sent. Check your email', 'success')
          return render_template("login.html", msg = "success")
@@ -236,14 +289,14 @@ def register_user(userInfo):
 
         # add user to the database
         verification_code = random.randrange(100000, 1000000)
-        new_user = User(name=name, email=email, password=generate_password_hash(password), verification_code=verification_code, verified=False)
+        new_user = User(name=name, email=email, password=generate_password_hash(password), verification_code=verification_code)
         db.session.add(new_user)
         db.session.commit()
 
         # create users directory
-        os.makedirs(f"{USER_FILES_DIR}/{name}")
-        os.makedirs(f"{USER_FILES_DIR}/{name}/{PREVIEW_DIRNAME}")
-        os.makedirs(f"{USER_FILES_DIR}/{name}/solutions")
+        os.makedirs(f"{USER_FILES_DIR}/{name}", exist_ok=True)
+        os.makedirs(f"{USER_FILES_DIR}/{name}/{PREVIEW_DIRNAME}", exist_ok=True)
+        os.makedirs(f"{USER_FILES_DIR}/{name}/solutions", exist_ok=True)
 
         # send email verification
         msg = f"Thank you for registration to the Math Tests Generator portal!!!\n \

@@ -66,7 +66,10 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(120), unique=False, nullable=False)
     verification_code = db.Column(db.Integer, unique=False, nullable=False)
-    verified = db.Column(db.Boolean, unique=False, nullable=False)
+    verified = db.Column(db.Boolean, unique=False, nullable=False, default = False)
+    active_reset_password_link = db.Column(db.Boolean, unique=False, nullable=True, default = None)
+    reset_password_token = db.Column(db.String(120), unique=False, nullable=True, default = None)
+    reset_password_random_token = db.Column(db.String(32), unique=False, nullable=True, default = None)
 
 class Tests(db.Model):
     id = db.Column(db.Integer, primary_key=True)
