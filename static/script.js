@@ -26,13 +26,15 @@ function createForm(variable) {
 
     form.setAttribute("id", "latex-var-" + variable)
 
-    div1.setAttribute("class", "form-row align-items-center");
+    div1.setAttribute("class", "row align-items-center");
+    div1.setAttribute("id", "variable_form_row");
     div2.setAttribute("id", "variable_div");
-    div3.setAttribute("class", "col-auto");
+    div2.setAttribute("class", "col-md-12 col-3 d-flex justify-content-center");
+    div3.setAttribute("class", "col-md-12 col-9");
 
     input_min.setAttribute("placeholder", "min value");
     input_min.setAttribute("type", "text");
-    input_min.setAttribute("class", "form-control");
+    input_min.setAttribute("class", "form-control input-min-var");
     input_min.setAttribute("id", "min-" + variable);
     input_min.setAttribute("oninput","validate_data()")
 
@@ -47,7 +49,7 @@ function createForm(variable) {
     error_max.setAttribute("id", "error-max-" + variable)
     error_max.setAttribute("class", "error")
 
-    label.innerHTML = "variable: " + variable;
+    label.innerHTML = "var: <strong>" + variable + "</strong>";
 
     document.querySelector('#variables_colum').append(form);
     form.append(div1);
@@ -65,11 +67,9 @@ var date = new Date(0)
 function update_variables_forms() {
     const date_now = Date.now();
     
-    if (date_now - date < 1000) {
+    if (date_now - date < 100) {
         return;
     }
-
-    date = Date.now()
 
     const str = document.getElementById("LateXCode").value;
     const regexp = /#(.*?)#/g;
