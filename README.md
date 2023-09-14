@@ -3,7 +3,8 @@ Final Project for CS50 2023 course
 
 ![screenshot](example.png)
 
-## Video Demo:
+## Video Demo: 
+https://youtu.be/i5DVoqokbFA
 
 ## Deployment
 [https://mathtestsgenerator.piotrw777.com](https://mathtestsgenerator.piotrw777.com)
@@ -57,11 +58,6 @@ On the server side the token is checked whether the request comes from a valid p
 + If the data is valid and the request is successful, the application may generate a PDF document with the requested math test variations.
 + If there are any server-side errors, the application can provide specific error messages or instructions to the user.
 
-### Benefits of this Design Approach
-+ Enhanced User Experience: By providing real-time error feedback, users can quickly identify and correct errors without the frustration of page reloads or redirects.
-+ Data Integrity: Combining client-side and server-side validation ensures that only valid data is processed, enhancing the integrity and security of the application.
-+ Efficient Workflow: Users can seamlessly submit data, confident that the application will guide them through the process with clear feedback.
-+ Error Handling: The application is capable of handling errors gracefully, providing users with helpful information when issues arise.
 
 ## Files description
 ### app.py
