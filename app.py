@@ -1,7 +1,8 @@
 import os, json, re, random
 from helpers import login_required, get_latex_errors, validate_password, csrf_authentication, apology, log, send_mail, validate_username
 from config import USER_FILES_DIR, PREVIEW_DIRNAME, app, db, parser, serializer, User, Tests
-from flask import flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory, escape
+from flask import flash, get_flashed_messages, redirect, render_template, request, session, send_from_directory
+from markupsafe import escape
 from werkzeug.security import check_password_hash, generate_password_hash
 from pylatex import Document, Package, Command
 from pylatex.utils import NoEscape
