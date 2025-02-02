@@ -5,11 +5,4 @@ yes | sudo apt install python3-venv texlive texlive-latex-extra
 python3 -m venv myenv
 source myenv/bin/activate
 pip install --upgrade pip
-pip install flask
-pip install flask-session
-pip install requests
-pip install Flask-SQLAlchemy
-pip install pylatex
-pip install python-dotenv
-pip install py_expression_eval
-pip install itsdangerous
+pip install flask flask-session requests Flask-SQLAlchemy pylatex python-dotenv py_expression_eval itsdangerous markupsafe
